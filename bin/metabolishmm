@@ -1,0 +1,14 @@
+#! /usr/bin/env python
+
+_author_="Elizabeth McDaniel"
+_email_="emcdaniel@wisc.edu"
+_status_="Development"
+
+import argparse
+import os
+import sys 
+
+def printHelp():
+    print("\
+    metabolisHMM\
+    A tool for summarizing metabolic capabilities of genomes based on manually curated marker genes")

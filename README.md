@@ -1,4 +1,4 @@
-# MetabolisHMM
+# metabolisHMM
 
 A tool for summarizing the metabolic capabilities of a set of genomes based on manually curated marker genes. 
 
