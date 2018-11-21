@@ -5,6 +5,7 @@ A tool for summarizing the metabolic capabilities and creating phylogenies of a 
 ## Dependencies and Setup 
 
 - python
+  - BioPython
 - HMMer
 - Muscle
 
