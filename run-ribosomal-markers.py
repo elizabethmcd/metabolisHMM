@@ -2,7 +2,7 @@
 
 import glob
 import subprocess 
-import os
+import os, sys
 import pandas as pd 
 from Bio import SeqIO, SearchIO
 from Bio.Nexus import Nexus
@@ -43,11 +43,21 @@ with open(output, "a") as f:
                     if num_hits > 0:
                         for i in range(0, 1): # takes only the first, best hit
                             hit_id = hits[i].id
-                            f.write(genome + "\t" + prot + "\t" + hit_id + "\n")
+                            f.write("genomes/"+genome+".faa" + "\t" + prot + "\t" + hit_id + "\n")
 
 # Parse locus tags from results file, get sequences 
 loci_list = pd.read_table("results/all-results-loci.txt", sep="\t", names=['genome', 'marker', 'locus'])
-
-
+loci=loci_list['locus']
+names=set(loci_list['genome'])
+markers=loci_list['marker']
+for marker in markers:
+    output = "results/"+marker+".faa"
+    with open(output, "a") as outfile:
+        for genome in genomes:
+            for record in SeqIO.parse(genome, "fasta"):
+                for locus in loci:
+                    if record.id in locus:
+                        outfile.write(">"+name+"_"+record.id+"\n")
+            
 
 # Make alignment file
