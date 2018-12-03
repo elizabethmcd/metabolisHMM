@@ -6,24 +6,24 @@ import subprocess
 import pandas as pd 
 from Bio import SearchIO
 
-# # Setup
-# genomes=glob.glob("genomes/*.faa")
-# markers=glob.glob("metabolic_markers/*.hmm")
-# os.mkdir("out")
-# os.mkdir("results")
-# FNULL = open(os.devnull, 'w')
+# Setup
+genomes=glob.glob("genomes/*.faa")
+markers=glob.glob("metabolic_markers/*.hmm")
+os.mkdir("out")
+os.mkdir("results")
+FNULL = open(os.devnull, 'w')
 
 # # Run HMMs
-# for genome in genomes: 
-#     name=os.path.basename(genome).replace(".faa", "").strip().splitlines()[0]
-#     dir=name
-#     os.mkdir("out/"+dir)
-#     for marker in markers:
-#         prot=os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
-#         outname= "out/"+dir+"/"+name + "-" + prot + ".out"
-#         cmd = ["hmmsearch","--cut_tc","--tblout="+outname, marker, genome]
-#         subprocess.call(cmd, stdout=FNULL)
-#         print("Running HMMsearch on " + name + " and " + prot + " marker")
+for genome in genomes: 
+    name=os.path.basename(genome).replace(".faa", "").strip().splitlines()[0]
+    dir=name
+    os.mkdir("out/"+dir)
+    for marker in markers:
+        prot=os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
+        outname= "out/"+dir+"/"+name + "-" + prot + ".out"
+        cmd = ["hmmsearch","--cut_tc","--tblout="+outname, marker, genome]
+        subprocess.call(cmd, stdout=FNULL)
+        print("Running HMMsearch on " + name + " and " + prot + " marker")
 
 # Parse HMM file to results matrix/dataframe
 print("Parsing all results...")
