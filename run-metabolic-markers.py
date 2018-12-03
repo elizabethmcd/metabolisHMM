@@ -26,17 +26,21 @@ for genome in genomes:
         print("Running HMMsearch on " + name + " and " + prot + " marker")
 
 # Parse HMM file to results matrix 
+print("Parsing all results...")
+all_dicts={}
 result_dirs = os.walk("out/")
-output = ("results/all-results-loci.txt")
-with open(output, "a") as f:
-    for path, dirs, files in result_dirs:
-        for file in files:
-            genome = file.split("-")[0]
-            prot = file.replace(".out", "").split("-")[1]
-            result = "out/"+genome+"/"+file
-            with open(result, "rU") as input:
-                for qresult in SearchIO.parse(input, "hmmer3-tab"):
-                    hits = qresult.hits
-                    num_hits = len(hits)
-                    if num_hits > 0:
-                        f.write(genome + "\t" + prot + "\t" + str(num_hits) + "\n")
+for path, dirs, files in result_dirs:
+    genome_dict={}
+    for file in files:
+        genome = file.split("-")[0]
+        prot = file.replace(".out", "").split("-")[1]
+        result = "out/"+genome+"/"+file
+        with open(result, "rU") as input:
+            for qresult in SearchIO.parse(input, "hmmer3-tab"):
+                hits = qresult.hits
+                num_hits = len(hits)
+                genome_dict[prot] = num_hits
+                all_dicts[os.path.basename(file).split("-")[0]]=genome_dict
+df=pd.DataFrame.from_dict(all_dicts, orient="index", dtype=None)
+df.to_csv("results/metabolic-markers-results.csv")
+df.to_csv("results/metabolic-results.tsv", sep="\t")
