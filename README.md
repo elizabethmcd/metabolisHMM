@@ -25,3 +25,5 @@ Some of the markers were made publicly available from Karthik Anantharaman's stu
 1. Thousands of microbial genomes shed light on interconnected biogeochemical processes in an aquifer system. K. Anantharaman et al. _Nature Communications_, 2016. 
 
 Additionally if you add a new marker to the database, and your analysis heavily focusses on that marker (e.g. nitrogen cycling), you may want to cite some reference about that marker protein. 
+
+The code and HMM profiles are free to use for any purposes. Feel free to submit an issue with any questions or something I glaringly did wrong! 
