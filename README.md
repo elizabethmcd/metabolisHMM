@@ -2,6 +2,8 @@
 
 A tool for summarizing the metabolic capabilities and creating phylogenies of a set of genomes based on manually curated marker genes. 
 
+**Note: At the present time, please email me at emcdaniel@wisc.edu for access to metabolic markers, as this is heavly under development and not ready for relase.**
+
 ## Dependencies and Setup 
 
 - python
