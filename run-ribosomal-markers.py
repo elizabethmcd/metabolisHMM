@@ -7,25 +7,26 @@ import pandas as pd
 from Bio import SeqIO, SearchIO
 
 # Setup
-# genomes = glob.glob("genomes/*.faa")
-# ribos = glob.glob("ribosomal_markers/*.hmm")
-# os.mkdir("out")
-# os.mkdir("results")
-# FNULL = open(os.devnull, 'w')
+genomes = glob.glob("genomes/*.faa")
+ribos = glob.glob("ribosomal_markers/*.hmm")
+os.mkdir("out")
+os.mkdir("results")
+FNULL = open(os.devnull, 'w')
 
-# # setup hmmsearch run
-# for genome in genomes:
-#     name=os.path.basename(genome).replace(".faa", "").strip().splitlines()[0]
-#     dir=name
-#     os.mkdir("out/"+dir)
-#     for ribo in ribos: 
-#         prot=os.path.basename(ribo).replace(".hmm", "").replace("_bact", "").strip().splitlines()[0]
-#         outname= "out/"+dir+"/"+name + "-" + prot + ".out"
-#         cmd = ["hmmsearch", "--tblout="+outname, ribo, genome]
-#         subprocess.call(cmd, stdout=FNULL)
-#         print("Running HMMsearch on " + name + " and " + prot + " marker")
+# setup hmmsearch run
+for genome in genomes:
+    name=os.path.basename(genome).replace(".faa", "").strip().splitlines()[0]
+    dir=name
+    os.mkdir("out/"+dir)
+    for ribo in ribos: 
+        prot=os.path.basename(ribo).replace(".hmm", "").replace("_bact", "").strip().splitlines()[0]
+        outname= "out/"+dir+"/"+name + "-" + prot + ".out"
+        cmd = ["hmmsearch", "--tblout="+outname, ribo, genome]
+        subprocess.call(cmd, stdout=FNULL)
+        print("Running HMMsearch on " + name + " and " + prot + " marker")
 
 # Parse HMM outputs
+print("Parsing results...")
 prot_list=['rpL14', 'rpL15', 'rpL16', 'rpL18', 'rpL2', 'rpL22', 'rpL24', 'rpL3', 'rpL4', 'rpL5', 'rpL6', 'rpS10', 'rpS17', 'rpS19', 'rpS3', 'rpS8', 'rpL14', 'rpL15', 'rpL16', 'rpL18', 'rpL2', 'rpL22', 'rpL24', 'rpL3', 'rpL4', 'rpL5', 'rpL6', 'rpS10', 'rpS17', 'rpS19', 'rpS3', 'rpS8']
 result_dirs = os.walk("out/")
 for prot in prot_list:
@@ -47,6 +48,13 @@ for prot in prot_list:
                                     hit_id=hits[i].id
                             for record in SeqIO.parse(input_fasta, "fasta"):
                                 if record.id in hit_id:
-                                    outf.write(">"+genome+"_"+hit_id+"\n"+str(record.seq)+"\n")
-
-# Make alignments for each marker
+                                    outf.write(">"+genome+"\n"+str(record.seq)+"\n")
+                       
+# Make alignment file
+print("Aligning concatenated hits...")
+fastas = glob.glob("results/*.faa")
+for fasta in fastas:
+    outname = os.path.basename(fasta).replace(".faa", "").strip().splitlines()[0]
+    output= "results/"+outname+".aln"
+    musc_cmd = ["muscle","-quiet","-in",fasta,"-out",output]
+    subprocess.call(musc_cmd)
