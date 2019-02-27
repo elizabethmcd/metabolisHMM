@@ -3,7 +3,7 @@
 import os, sys
 import glob 
 import subprocess 
-from Bio import SearchIO
+from Bio import SeqIO, SearchIO
 
 os.mkdir("out")
 os.mkdir("results")
@@ -15,12 +15,12 @@ dir=prot
 os.mkdir("out/"+dir)
 
 # Run HMM for a single marker
+print("Searching for " + prot + " marker in genome set...")
 for genome in genomes: 
     name=os.path.basename(genome).replace(".faa", "").strip().splitlines()[0]
     outname= "out/"+dir+"/"+name + ".out"
     cmd = ["hmmsearch","--cut_tc","--tblout="+outname, marker, genome]
     subprocess.call(cmd, stdout=FNULL)
-    print("Searching for " + prot + " marker in genome set")
 
 # Parse HMM file 
 print("Parsing all results...")
