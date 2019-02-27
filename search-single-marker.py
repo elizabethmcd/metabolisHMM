@@ -3,19 +3,20 @@
 import os, sys
 import glob 
 import subprocess 
-import pandas as pd 
 from Bio import SearchIO
 
+os.mkdir("out")
+os.mkdir("results")
 genomes=glob.glob("genomes/*.faa")
 marker=sys.argv[1]
 FNULL = open(os.devnull, 'w')
+prot=os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
+dir=prot
+os.mkdir("out/"+dir)
 
 # Run HMM for a single marker
 for genome in genomes: 
     name=os.path.basename(genome).replace(".faa", "").strip().splitlines()[0]
-    prot=os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
-    dir=prot
-    os.mkdir("out/"+dir)
     outname= "out/"+dir+"/"+name + ".out"
     cmd = ["hmmsearch","--cut_tc","--tblout="+outname, marker, genome]
     subprocess.call(cmd, stdout=FNULL)
