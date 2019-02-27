@@ -21,7 +21,7 @@ for genome in genomes:
     subprocess.call(cmd, stdout=FNULL)
     print("Searching for " + prot + " marker in genome set")
 
-# Parse HMM file to results matrix/dataframe
+# Parse HMM file 
 print("Parsing all results...")
 result_dir = os.walk("out/"+dir)
 for path, dirs, files in result_dir:
@@ -44,6 +44,18 @@ for path, dirs, files in result_dir:
                                     outf.write(">"+genome+"\n"+str(record.seq)+"\n")
 
 # Align hits 
-
+print("Aligning hits...")
+fastas = glob.glob("results/*.faa")
+for fasta in fastas:
+    outname = os.path.basename(fasta).replace(".faa", "").strip().splitlines()[0]
+    output= "results/"+outname+".aln"
+    musc_cmd = ["muscle","-quiet","-in",fasta,"-out",output]
+    subprocess.call(musc_cmd)
 
 # Make tree 
+print("Constructing phylogeny...")
+marker_name = os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
+alignment_file = "results/"+marker_name+".aln"
+output_tree="results/"+marker_name+".tre"
+tree_cmd = ["FastTree",alignment_file,">",output_tree]
+subprocess.call(tree_cmd)
