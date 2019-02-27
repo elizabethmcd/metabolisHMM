@@ -58,5 +58,5 @@ print("Constructing phylogeny...")
 marker_name = os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
 alignment_file = "results/"+marker_name+".aln"
 output_tree="results/"+marker_name+".tre"
-tree_cmd = ["FastTree",alignment_file,">",output_tree]
+tree_cmd = ["FastTree","-out",output_tree,alignment_file]
 subprocess.call(tree_cmd)
