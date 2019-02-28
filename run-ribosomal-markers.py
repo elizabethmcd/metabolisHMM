@@ -1,33 +1,66 @@
 #! /usr/bin/env python 
 
 import glob
+import argparse
 import subprocess 
 import os, sys
 import pandas as pd 
 from Bio import SeqIO, SearchIO
 
+# Arguments
+
+parser = argparse.ArgumentParser(description = "Create full archaeal/bacterial genome phylogenies based off specific ribosomal protein markers")
+parser.add_argument('--genome_dir', metavar='GENOMEDIR', help='Directory where genomes to be screened are held')
+parser.add_argument('--domain', metavar='DOMAIN', help='archaea, bacteria (choose one, need to be assessed separately)')
+
+args = parser.parse_args()
+GENOMEDIR = args.genome_dir
+DOMAIN = args.domain
+
 # Setup
-genomes = glob.glob("genomes/*.faa")
+genomes = glob.glob(GENOMEDIR)
 ribos = glob.glob("ribosomal_markers/*.hmm")
-os.mkdir("out")
-os.mkdir("results")
+if os.path.exists("out"):
+    break
+else:
+    os.mkdir("out")
+if os.path.exists("results"):
+    break
+else:
+    os.mkdir("results")
 FNULL = open(os.devnull, 'w')
 
-# setup hmmsearch run
+bacteria_list = ['rpL14', 'rpL15', 'rpL16', 'rpL18', 'rpL2', 'rpL22', 'rpL24', 'rpL3', 'rpL4', 'rpL5', 'rpL6', 'rpS10', 'rpS17', 'rpS19', 'rpS3', 'rpS8', 'rpL14', 'rpL15', 'rpL16', 'rpL18', 'rpL2', 'rpL22', 'rpL24', 'rpL3', 'rpL4', 'rpL5', 'rpL6', 'rpS10', 'rpS17', 'rpS19', 'rpS3', 'rpS8']
+archaea_list = ['rpL14', 'rpL15', 'rpL18', 'rpL2', 'rpL22', 'rpL24', 'rpL3', 'rpL4', 'rpL5', 'rpL6', 'rpS17', 'rpS19', 'rpS3', 'rpS8', 'rpL14', 'rpL15', 'rpL16', 'rpL18', 'rpL2', 'rpL22', 'rpL24', 'rpL3', 'rpL4', 'rpL5', 'rpL6', 'rpS10', 'rpS17', 'rpS19', 'rpS3', 'rpS8']
+
+# setup hmmsearch run for archaea or bacteria
 for genome in genomes:
     name=os.path.basename(genome).replace(".faa", "").strip().splitlines()[0]
     dir=name
     os.mkdir("out/"+dir)
-    for ribo in ribos: 
-        prot=os.path.basename(ribo).replace(".hmm", "").replace("_bact", "").strip().splitlines()[0]
-        outname= "out/"+dir+"/"+name + "-" + prot + ".out"
-        cmd = ["hmmsearch", "--tblout="+outname, ribo, genome]
-        subprocess.call(cmd, stdout=FNULL)
-        print("Running HMMsearch on " + name + " and " + prot + " marker")
-
+    if DOMAIN == 'archaea':
+        for ribo in ribos: 
+            prot=os.path.basename(ribo).replace(".hmm", "").replace("_bact", "").strip().splitlines()[0]
+            if prot in archaea_list:
+                outname= "out/"+dir+"/"+name + "-" + prot + ".out"
+                cmd = ["hmmsearch", "--tblout="+outname, ribo, genome]
+                subprocess.call(cmd, stdout=FNULL)
+                print("Running HMMsearch on " + name + " and " + prot + " marker")
+    else DOMAIN == 'bacteria':
+        for ribo in ribos:
+            prot=os.path.basename(ribo).replace(".hmm", "").replace("_bact", "").strip().splitlines()[0]
+            if prot in bacteria_list:
+                outname= "out/"+dir+"/"+name + "-" + prot + ".out"
+                cmd = ["hmmsearch", "--tblout="+outname, ribo, genome]
+                subprocess.call(cmd, stdout=FNULL)
+                print("Running HMMsearch on " + name + " and " + prot + " marker")
+    
 # Parse HMM outputs
 print("Parsing results...")
-prot_list=['rpL14', 'rpL15', 'rpL16', 'rpL18', 'rpL2', 'rpL22', 'rpL24', 'rpL3', 'rpL4', 'rpL5', 'rpL6', 'rpS10', 'rpS17', 'rpS19', 'rpS3', 'rpS8', 'rpL14', 'rpL15', 'rpL16', 'rpL18', 'rpL2', 'rpL22', 'rpL24', 'rpL3', 'rpL4', 'rpL5', 'rpL6', 'rpS10', 'rpS17', 'rpS19', 'rpS3', 'rpS8']
+if DOMAIN == 'archaea':    
+    prot_list=['rpL14', 'rpL15', 'rpL18', 'rpL2', 'rpL22', 'rpL24', 'rpL3', 'rpL4', 'rpL5', 'rpL6','rpS17', 'rpS19', 'rpS3', 'rpS8', 'rpL14', 'rpL15', 'rpL16', 'rpL18', 'rpL2', 'rpL22', 'rpL24', 'rpL3', 'rpL4', 'rpL5', 'rpL6', 'rpS10', 'rpS17', 'rpS19', 'rpS3', 'rpS8']
+else:
+    prot_list=['rpL14', 'rpL15', 'rpL16', 'rpL18', 'rpL2', 'rpL22', 'rpL24', 'rpL3', 'rpL4', 'rpL5', 'rpL6', 'rpS10', 'rpS17', 'rpS19', 'rpS3', 'rpS8', 'rpL14', 'rpL15', 'rpL16', 'rpL18', 'rpL2', 'rpL22', 'rpL24', 'rpL3', 'rpL4', 'rpL5', 'rpL6', 'rpS10', 'rpS17', 'rpS19', 'rpS3', 'rpS8']
 result_dirs = os.walk("out/")
 for prot in prot_list:
     for path, dirs, files in result_dirs: 
@@ -58,3 +91,5 @@ for fasta in fastas:
     output= "results/"+outname+".aln"
     musc_cmd = ["muscle","-quiet","-in",fasta,"-out",output]
     subprocess.call(musc_cmd)
+
+# Concatenate alignments 
