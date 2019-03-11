@@ -6,9 +6,12 @@ import subprocess
 import pandas as pd 
 from Bio import SearchIO
 
+# Arguments 
+DIR=sys.argv[1]
+
 # Setup
 genomes=glob.glob("genomes/*.faa")
-markers=glob.glob("WLJ/*.hmm")
+markers=glob.glob(os.path.join(DIR, '*.hmm'))
 os.mkdir("out")
 os.mkdir("results")
 FNULL = open(os.devnull, 'w')
@@ -56,9 +59,4 @@ for col in existing_markers:
     all_cols.append(col)
 df_all=df.reindex(columns=all_cols)
 df_all.fillna(0, inplace=True)
-
-reordered_cols = ['fwdA_fmdA', 'fwdB_fmdB', 'fwdC_fmdC', 'fwdD_fmdD', 'fwdF_fmdF' 'ftr', 'mch', 'mtd', 'mer', 'fdhA', 'fdhB', 'fhs', 'folD', 'metF', 'cdhA', 'cdhB', 'cdhC', 'cdhD_acsD', 'cdhE', 'acsE', 'cooS', 'acsB']
-
-df_final=df_all[reordered_cols]
-df_final.to_csv("results/metabolic-marker-results.tsv", sep="\t")
-df_final.to_csv("results/metabolic-marker-results.csv")
+df_all.to_csv("results/metabolic-marker-results.csv")

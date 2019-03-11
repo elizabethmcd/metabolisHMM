@@ -16,11 +16,11 @@ To run the pipeline, clone the repository with `git clone https://github.com/eli
 
 ## Metabolic Summaries
 
-To get metabolic summaries of your genomes, run `python run-metabolic-markers.py`. This will create a summary table of each metabolic marker and how many hits were found above the given threshold in all of your genomes. 
+To get metabolic summaries of your genomes, run `python summarize-metabolism.py`. This will create a summary table of each metabolic marker and how many hits were found above the given threshold in all of your genomes. If you want to run the summary on a specific set of markers outside of those included here (such as a specific pathway - e.g. Wood Ljungdhal as provided), use `python search-custom-markers.py path-to-markers/`. 
 
 ## Genome Phylogenies
 
-To create a genome phylogeny on the given genomes based on ribosomal protein markers, run `python run-ribosomal-markers.py`. 
+To create a genome phylogeny on the given genomes based on ribosomal protein markers, run `python create-genome-phylogeny.py`. 
 
 ```
 usage: python run-ribosomal-markers.py --genome-dir --domain
@@ -30,7 +30,7 @@ arguments:
   --domain archaea, bacteria
 ```
 
-The output of `run-ribosomal-markers.py` are alignments for each marker gene. I have yet to implement my own concatenation function to put together all the alignments, but the perl script `catfasta2phyml` by [Johan Nylander](https://github.com/nylander) works really well for now. The usage is `perl catfasta2phyml.pl -f --concatenate results/*.aln > results/concatenated-phylogeny.fasta`. For creating phylogenies with multiple markers, it's usually best to **not** use FastTree. But if you want a quick look to make sure everything works nicely before using something like RaxML, the usage is `FastTree concatenated-alignements.aln > ribosomal-tree.tre`, and you can add any additional parameters as you see fit.
+The output of `create-genome-phylogeny.py` are alignments for each marker gene. I have yet to implement my own concatenation function to put together all the alignments, but the perl script `catfasta2phyml` by [Johan Nylander](https://github.com/nylander) works really well for now. The usage is `perl catfasta2phyml.pl -f --concatenate results/*.aln > results/concatenated-phylogeny.fasta`. For creating phylogenies with multiple markers, it's usually best to **not** use FastTree. But if you want a quick look to make sure everything works nicely before using something like RaxML, the usage is `FastTree concatenated-alignements.aln > ribosomal-tree.tre`, and you can add any additional parameters as you see fit.
 
 ## Phylogeny of a single marker
 
