@@ -2,6 +2,7 @@
 
 import os, sys
 import glob 
+import argparse
 import subprocess 
 from Bio import SeqIO, SearchIO
 
