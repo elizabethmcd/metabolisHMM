@@ -16,9 +16,29 @@ To run the pipeline, clone the repository with `git clone https://github.com/eli
 
 ## Metabolic Summaries
 
-To get metabolic summaries of your genomes, run `python run-metabolic-markers.py`. This will create a summary table of each metabolic marker and how many hits were found above the given threshold in all of your genomes. To create a genome phylogeny on the given genomes based on ribosomal protein markers, run `python run-ribosomal-markers.py`. Metabolic characterization summaries are provided in the `results` folder, and columns are ordered by functions.
+To get metabolic summaries of your genomes, run `python run-metabolic-markers.py`. This will create a summary table of each metabolic marker and how many hits were found above the given threshold in all of your genomes. 
 
-The output of `run-ribosomal-markers.py` are alignments for each marker gene. The full pipeline for approximately 500 genomes from running HMM searches to alignments for each marker takes about 30 minutes. I have yet to implement my own concatenation function to put together all the alignments, but the perl script `catfasta2phyml` by [Johan Nylander](https://github.com/nylander) works really well for now. The usage is `perl catfasta2phyml.pl -f --concatenate results/*.aln > results/concatenated-phylogeny.fasta`. For creating phylogenies with multiple markers, it's usually best to **not** use FastTree. But if you want a quick look to make sure everything works nicely before using something like RaxML, the usage is `FastTree concatenated-alignements.aln > ribosomal-tree.tre`, and you can add any additional parameters as you see fit.
+## Genome Phylogenies
+
+To create a genome phylogeny on the given genomes based on ribosomal protein markers, run `python run-ribosomal-markers.py`. 
+
+```
+usage: python run-ribosomal-markers.py --genome-dir --domain
+Creates full archaeal/bacterial genome phylogenies based off specific ribosomal protein markers
+arguments:
+  --genome_dir Directory where genomes to be screened are held
+  --domain archaea, bacteria
+```
+
+The output of `run-ribosomal-markers.py` are alignments for each marker gene. I have yet to implement my own concatenation function to put together all the alignments, but the perl script `catfasta2phyml` by [Johan Nylander](https://github.com/nylander) works really well for now. The usage is `perl catfasta2phyml.pl -f --concatenate results/*.aln > results/concatenated-phylogeny.fasta`. For creating phylogenies with multiple markers, it's usually best to **not** use FastTree. But if you want a quick look to make sure everything works nicely before using something like RaxML, the usage is `FastTree concatenated-alignements.aln > ribosomal-tree.tre`, and you can add any additional parameters as you see fit.
+
+## Phylogeny of a single marker
+
+Say you are interested in the phylogenetic distribution of a particular marker (nifA for example) amongst your genomes. Use the script `search-single-marker.py` and the path to your marker of interest. You can put it in the `metabolic-markers` directory to be run with others for metabolic summaries, or have it in a different location. The usage is: 
+
+```
+python search-single-marker.py path-to-marker/marker.hmm
+```
 
 ## Caveats 
 
