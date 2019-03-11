@@ -34,10 +34,10 @@ The output of `create-genome-phylogeny.py` are alignments for each marker gene. 
 
 ## Phylogeny of a single marker
 
-Say you are interested in the phylogenetic distribution of a particular marker (nifA for example) amongst your genomes. Use the script `search-single-marker.py` and the path to your marker of interest. You can put it in the `metabolic-markers` directory to be run with others for metabolic summaries, or have it in a different location. The usage is: 
+Say you are interested in the phylogenetic distribution of a particular marker (nifA for example) amongst your genomes. Use the script `single-marker-phylogeny.py` and the path to your marker of interest. You can put it in the `metabolic-markers` directory to be run with others for metabolic summaries, or have it in a different location. The usage is: 
 
 ```
-python search-single-marker.py path-to-marker/marker.hmm
+python single-marker-phylogeny.py path-to-marker/marker.hmm
 ```
 
 ## Caveats 
