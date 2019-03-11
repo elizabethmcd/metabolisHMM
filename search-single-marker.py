@@ -5,10 +5,18 @@ import glob
 import subprocess 
 from Bio import SeqIO, SearchIO
 
+# Arguments
+
+parser = argparse.ArgumentParser(description = "Create phylogeny of a single marker protein")
+parser.add_argument('--marker, metavar='MARKER', help='Path to marker HMM of choosing')
+
+
+args = parser.parse_args()
+marker=args.marker
+
 os.mkdir("out")
 os.mkdir("results")
 genomes=glob.glob("genomes/*.faa")
-marker=sys.argv[1]
 FNULL = open(os.devnull, 'w')
 prot=os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
 dir=prot

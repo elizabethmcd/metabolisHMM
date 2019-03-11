@@ -46,14 +46,14 @@ for genome in genomes:
                 cmd = ["hmmsearch", "--tblout="+outname, ribo, genome]
                 subprocess.call(cmd, stdout=FNULL)
                 print("Running HMMsearch on " + name + " and " + prot + " marker")
-    else DOMAIN == 'bacteria':
-        for ribo in ribos:
-            prot=os.path.basename(ribo).replace(".hmm", "").replace("_bact", "").strip().splitlines()[0]
-            if prot in bacteria_list:
-                outname= "out/"+dir+"/"+name + "-" + prot + ".out"
-                cmd = ["hmmsearch", "--tblout="+outname, ribo, genome]
-                subprocess.call(cmd, stdout=FNULL)
-                print("Running HMMsearch on " + name + " and " + prot + " marker")
+        else DOMAIN == 'bacteria':
+            for ribo in ribos:
+                prot=os.path.basename(ribo).replace(".hmm", "").replace("_bact", "").strip().splitlines()[0]
+                if prot in bacteria_list:
+                    outname= "out/"+dir+"/"+name + "-" + prot + ".out"
+                    cmd = ["hmmsearch", "--tblout="+outname, ribo, genome]
+                    subprocess.call(cmd, stdout=FNULL)
+                    print("Running HMMsearch on " + name + " and " + prot + " marker")
     
 # Parse HMM outputs
 print("Parsing results...")

@@ -6,6 +6,9 @@ import subprocess
 import pandas as pd 
 from Bio import SearchIO
 
+# Usage 
+parser = argparse.ArgumentParser(description = "Output summary of provided metabolic markers against input genomes")
+
 # Setup
 genomes=glob.glob("genomes/*.faa")
 markers=glob.glob("metabolic_markers/*.hmm")
