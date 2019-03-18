@@ -12,8 +12,8 @@ DIR=sys.argv[1]
 # Setup
 genomes=glob.glob("genomes/*.faa")
 markers=glob.glob(os.path.join(DIR, '*.hmm'))
-os.mkdir("out")
-os.mkdir("results")
+# os.mkdir("out")
+# os.mkdir("results")
 FNULL = open(os.devnull, 'w')
 
 # Run HMMs
@@ -50,8 +50,7 @@ df=pd.DataFrame.from_dict(all_dicts, orient="index", dtype=None)
 all_cols=[]
 absent_cols=[]
 existing_markers = df.columns
-all_markers=glob.glob("metabolic_markers/*.hmm")
-for marker in all_markers:
+for marker in markers:
     prot=os.path.basename(marker).replace(".hmm", "")
     if prot not in existing_markers:
         all_cols.append(prot)
