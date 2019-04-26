@@ -28,18 +28,22 @@ bacteria_list = ['rpL14', 'rpL15', 'rpL16', 'rpL18', 'rpL2', 'rpL22', 'rpL24', '
 archaea_list = ['rpL14', 'rpL15', 'rpL16', 'rpL18', 'rpL2', 'rpL22', 'rpL24', 'rpL3', 'rpL4', 'rpL5', 'rpL6', 'rpS17', 'rpS19', 'rpS3', 'rpS8', 'rpL14', 'rpL15', 'rpL18', 'rpL2', 'rpL22', 'rpL24', 'rpL3', 'rpL4', 'rpL5', 'rpL6', 'rpS10', 'rpS17', 'rpS19', 'rpS3', 'rpS8']
 
 # setup hmmsearch run for archaea or bacteria
-for genome in genomes:
-    name=os.path.basename(genome).replace(".faa", "").strip().splitlines()[0]
-    dir=name
-    os.mkdir("out/"+dir)
-    if DOMAIN == 'archaea':
+if DOMAIN == 'archaea':
+    for genome in genomes:
+        name=os.path.basename(genome).replace(".faa", "").strip().splitlines()[0]
+        dir=name
+        os.mkdir("out/"+dir)
         for prot in archaea_list:
             marker ="ribosomal_markers/"+prot+"_bact.hmm"
             outname= "out/"+dir+"/"+name + "-" + prot + ".out"
             cmd = ["hmmsearch", "--tblout="+outname, marker, genome]
             subprocess.call(cmd, stdout=FNULL)
             print("Running HMMsearch on " + name + " and " + prot + " marker")
-    elif DOMAIN == 'bacteria':
+elif DOMAIN == 'bacteria':
+    for genome in genomes:
+        name=os.path.basename(genome).replace(".faa", "").strip().splitlines()[0]
+        dir=name
+        os.mkdir("out/"+dir)
         for prot in bacteria_list:
             marker="ribosomal_markers/"+prot+"_bact.hmm"
             outname= "out/"+dir+"/"+name + "-" + prot + ".out"
