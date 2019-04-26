@@ -24,8 +24,8 @@ os.mkdir("out")
 os.mkdir("results")
 FNULL = open(os.devnull, 'w')
 
-bacteria_list = ['rpL14', 'rpL15', 'rpL16', 'rpL18', 'rpL2', 'rpL22', 'rpL24', 'rpL3', 'rpL4', 'rpL5', 'rpL6', 'rpS10', 'rpS17', 'rpS19', 'rpS3', 'rpS8', 'rpL14', 'rpL15', 'rpL16', 'rpL18', 'rpL2', 'rpL22', 'rpL24', 'rpL3', 'rpL4', 'rpL5', 'rpL6', 'rpS10', 'rpS17', 'rpS19', 'rpS3', 'rpS8']
-archaea_list = ['rpL14', 'rpL15', 'rpL16', 'rpL18', 'rpL2', 'rpL22', 'rpL24', 'rpL3', 'rpL4', 'rpL5', 'rpL6', 'rpS17', 'rpS19', 'rpS3', 'rpS8', 'rpL14', 'rpL15', 'rpL18', 'rpL2', 'rpL22', 'rpL24', 'rpL3', 'rpL4', 'rpL5', 'rpL6', 'rpS10', 'rpS17', 'rpS19', 'rpS3', 'rpS8']
+bacteria_list = ['rpL14','rpL15','rpL16','rpL18','rpL22','rpL24','rpL2','rpL3','rpL4','rpL5','rpL6','rpS10','rpS17','rpS19','rpS3','rpS8']
+archaea_list = ['rpL14','rpL15','rpL18','rpL22','rpL24','rpL2','rpL3','rpL4','rpL5','rpL6','rpS17','rpS19','rpS3','rpS8']
 
 # setup hmmsearch run for archaea or bacteria
 if DOMAIN == 'archaea':
