@@ -29,7 +29,7 @@ archaea_list = ['rpL14', 'rpL15', 'rpL18', 'rpL2', 'rpL22', 'rpL24', 'rpL3', 'rp
 
 # setup hmmsearch run for archaea or bacteria
 for genome in GENOMEFILES:
-    name=os.path.basename().replace(".faa", "").strip().splitlines()[0]
+    name=os.path.basename(genome).replace(".faa", "").strip().splitlines()[0]
     dir=name
     os.mkdir("out/"+dir)
     if DOMAIN == 'archaea':
