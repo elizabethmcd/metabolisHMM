@@ -95,14 +95,17 @@ for fasta in fastas:
 # Concatenate alignments
 print("Concatenating alignments...")
 alignments="results/*.aln"
-cat_cmd = ["perl catfasta2phyml.pl","-f","--concatenate",alignments,">"results/concatenated-phylogeny.fasta]
+outname="results/"+DOMAIN+"-ribo-concatenated-phylogeny.fasta"
+cat_cmd = ["perl catfasta2phyml.pl","-f","--concatenate",alignments,">",outname]
 
 # Create tree
 if PHYTOOL == 'fastree':
     print("Calculating tree using FastTree...")
+    fileIn="results/"+DOMAIN+"-ribo-concatenated-phylogeny.fasta"
     outname = "results/"+DOMAIN+"-fastTree-ribosomal-tree.tre"
-    fastCmd = ["FastTree",results/concatenated-phylogeny.fasta,">",outname]
+    fastCmd = ["FastTree",fileIn,">",outname]
 elif PHYTOOL == "raxml":
     print("Calculating tree with RaxML... be patient...")
     outname= "results/"+DOMAIN+"-raxml-ribo"
-    raxCmd = ["raxmlHPC-PTHREADS","-f","a","-m","PROTGAMMAAUTO","-p","12345","-x","12345","-#","100","-s",results/concatenated-phylogeny.fasta,"-T",THREADS,"-n",outname]
+    fileIn="results/"+DOMAIN+"-ribo-concatenated-phylogeny.fasta"
+    raxCmd = ["raxmlHPC-PTHREADS","-f","a","-m","PROTGAMMAAUTO","-p","12345","-x","12345","-#","100","-s",fileIn,"-T",THREADS,"-n",outname]
