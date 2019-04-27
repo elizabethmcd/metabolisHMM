@@ -8,29 +8,29 @@ A tool for summarizing metabolic capabilities and creating phylogenies of genome
   - BioPython
   - pandas
 - HMMer
-- Muscle
+- Mafft
 - [catfasta2phyml](https://github.com/nylander/catfasta2phyml)
-- FastTree
+- FastTree/RaxML
 
-To run the pipeline, clone the repository with `git clone https://github.com/elizabethmcd/metabolisHMM`. This will provide you with the necessary scripts and HMM markers to run the analysis on a given set of genomes. Place the protein files ending in the extension `.faa` in a folder named `genomes`. If your filenames have dashes `-` in them, rename them for example with underscores instead, with `rename 's/-/_/g' *`.  
+To run the pipeline, clone the repository with `git clone https://github.com/elizabethmcd/metabolisHMM`. This will provide you with the necessary scripts and HMM markers to run the analysis on a given set of genomes. If your filenames have dashes `-` in them, rename them for example with underscores instead, with `rename 's/-/_/g' *`. You will need all of the above programs in your path, including the `catfasta2phyml` perl script.
 
 ## Metabolic Summaries
 
-To get metabolic summaries of your genomes, run `python summarize-metabolism.py`. This will create a summary table of each metabolic marker and how many hits were found above the given threshold in all of your genomes. If you want to run the summary on a specific set of markers outside of those included here (such as a specific pathway - e.g. Wood Ljungdhal as provided), use `python search-custom-markers.py path-to-markers/`. This will place the columns in alphabetical order of markers, and not necessarily the order of the pathway - which you can change in Excel/R afterwards for downstream analysis. To get HMM models for specific pathways, the TIGRFAM database is usually a good start. I personally love Connor Skennerton's [KEGG HMM Models](https://github.com/ctSkennerton/kegg_hmm_models) tool for pulling down sequences for a Kegg ortholog, clustering them, and creating an HMM alignment. You can then test the HMM alignment for cutoffs by running against the pulled down proteins and inspecting for a cutoff score of some confidence. 
+To get metabolic summaries of your genomes, run `python summarize-metabolism.py`. This will create a summary table of each metabolic marker and how many hits were found above the given threshold in all of your genomes. If you want to run the summary on a specific set of markers outside of those included here (such as a specific pathway - e.g. Wood Ljungdhal as provided), use `python search-custom-markers.py path-to-markers/`. This will place the columns in alphabetical order of markers, and not necessarily the order of the pathway.
 
 ## Genome Phylogenies
 
 To create a genome phylogeny on the given genomes based on ribosomal protein markers, run `python create-genome-phylogeny.py`. 
 
 ```
-usage: python run-ribosomal-markers.py --genome-dir --domain
+usage: python create-genome-phylogeny.py --genome-dir --domain
 Creates full archaeal/bacterial genome phylogenies based off specific ribosomal protein markers
 arguments:
   --genome_dir Directory where genomes to be screened are held
   --domain archaea, bacteria
+  --phylogeny fastree, raxml
+  --threads #threads for calculating phylogeny
 ```
-
-The output of `create-genome-phylogeny.py` are alignments for each marker gene. I have yet to implement my own concatenation function to put together all the alignments, but the perl script `catfasta2phyml` by [Johan Nylander](https://github.com/nylander) works really well for now. The usage is `perl catfasta2phyml.pl -f --concatenate results/*.aln > results/concatenated-phylogeny.fasta`. For creating phylogenies with multiple markers, it's usually best to **not** use FastTree. But if you want a quick look to make sure everything works nicely before using something like RaxML, the usage is `FastTree concatenated-alignements.aln > ribosomal-tree.tre`, and you can add any additional parameters as you see fit.
 
 ## Phylogeny of a single marker
 

@@ -12,11 +12,15 @@ from Bio import SeqIO, SearchIO
 parser = argparse.ArgumentParser(description = "Create full archaeal/bacterial genome phylogenies based off specific ribosomal protein markers")
 parser.add_argument('--genome_dir', metavar='GENOMEDIR', help='Directory where genomes to be screened are held')
 parser.add_argument('--domain', metavar='DOMAIN', help='archaea, bacteria (choose one, need to be assessed separately)')
+parser.add_argument('--phylogeny', metavar='PHY', help="fastree or raxml, choose one")
+parser.add_argument("--threads",metavar='THREADS',help="number of threads for tree making")
 
 args = parser.parse_args()
 GENOMEDIR = args.genome_dir
 GENOMEFILES = GENOMEDIR + "/*.faa"
 DOMAIN = args.domain
+PHYTOOL = args.phylogeny
+THREADS = args.threads
 
 # Setup
 genomes = glob.glob(GENOMEFILES)
@@ -85,7 +89,19 @@ fastas = glob.glob("results/*.faa")
 for fasta in fastas:
     outname = os.path.basename(fasta).replace(".faa", "").strip().splitlines()[0]
     output= "results/"+outname+".aln"
-    musc_cmd = ["muscle","-quiet","-in",fasta,"-out",output]
-    subprocess.call(musc_cmd)
+    mafft_cmd = ["mafft","--quiet","in",fasta,">",output]
+    subprocess.call(mafft_cmd)
 
-# Concatenate alignments 
+# Concatenate alignments
+print("Concatenating alignments...")
+cat_cmd = ["perl catfasta2phyml.pl","-f","--concatenate",results/*.aln,">"results/concatenated-phylogeny.fasta]
+
+# Create tree
+if PHYTOOL == 'fastree':
+    print("Calculating tree using FastTree...")
+    outname = "results/"+DOMAIN+"-fastTree-ribosomal-tree.tre"
+    fastCmd = ["FastTree",results/concatenated-phylogeny.fasta,">",outname]
+elif PHYTOOL == "raxml":
+    print("Calculating tree with RaxML... be patient...")
+    outname= "results/"+DOMAIN+"-raxml-ribo"
+    raxCmd = ["raxmlHPC-PTHREADS","-f","a","-m","PROTGAMMAAUTO","-p","12345","-x","12345","-#","100","-s",results/concatenated-phylogeny.fasta,"-T",THREADS,"-n",outname]
