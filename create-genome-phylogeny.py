@@ -89,7 +89,7 @@ fastas = glob.glob("results/*.faa")
 for fasta in fastas:
     outname = os.path.basename(fasta).replace(".faa", "").strip().splitlines()[0]
     output= "results/"+outname+".aln"
-    mafft_cmd = ["mafft","--quiet",fasta,">",output]
+    mafft_cmd = ["mafft",fasta,">",output]
     subprocess.call(mafft_cmd)
 
 # Concatenate alignments
