@@ -72,7 +72,7 @@ for prot in prot_list:
             genome_file = GENOMEDIR+genome+".faa"
             with open(output, "a") as outf:
                 with open(genome_file, "r") as input_fasta:
-                    with open(result, "rU") as input:
+                    with open(result, "r") as input:
                         for qresult in SearchIO.parse(input, "hmmer3-tab"):
                             hits=qresult.hits
                             num_hits=len(hits)
@@ -89,7 +89,9 @@ fastas = glob.glob("results/*.faa")
 for fasta in fastas:
     outname = os.path.basename(fasta).replace(".faa", "").strip().splitlines()[0]
     output= "results/"+outname+".aln"
-    subprocess.call('mafft' + ' ' + fasta + '>' + outfile, shell=True)
+    mafft_cmd = "mafft --maxiterate 1000 "
+    mafft_cmd += fasta+" > "+output
+    os.system(mafft_cmd)
 
 # Concatenate alignments
 print("Concatenating alignments...")
