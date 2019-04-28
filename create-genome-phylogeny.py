@@ -89,7 +89,7 @@ fastas = glob.glob("results/*.faa")
 for fasta in fastas:
     outname = os.path.basename(fasta).replace(".faa", "").strip().splitlines()[0]
     output= "results/"+outname+".aln"
-    mafft_cmd = "mafft --maxiterate 1000 "
+    mafft_cmd = "mafft --maxiterate 1000 --quiet "
     mafft_cmd += fasta+" > "+output
     os.system(mafft_cmd)
 
@@ -106,11 +106,11 @@ if PHYTOOL == 'fastree':
     print("Calculating tree using FastTree...")
     fileIn="results/"+DOMAIN+"-ribo-concatenated-phylogeny.fasta"
     outname = "results/"+DOMAIN+"-fastTree-ribosomal-tree.tre"
-    fastCmd = ["FastTree",fileIn,">",outname]
-    subprocess.call(fastCmd)
+    fastCmd = "FastTree "+fileIn+" > "+outname]
+    os.system(fastCmd)
 elif PHYTOOL == "raxml":
     print("Calculating tree with RaxML... be patient...")
     outname= "results/"+DOMAIN+"-raxml-ribo"
     fileIn="results/"+DOMAIN+"-ribo-concatenated-phylogeny.fasta"
-    raxCmd = ["raxmlHPC-PTHREADS","-f","a","-m","PROTGAMMAAUTO","-p","12345","-x","12345","-#","100","-s",fileIn,"-T",THREADS,"-n",outname]
-    subprocess.call(raxCmd)
+    raxCmd = "raxmlHPC-PTHREADS -f a -m PROTGAMMAAUTO -p 12345 -x 12345 -# 100 -s "+fileIn+"-T"+THREADS+"-n"+outname
+    os.system(raxCmd)
