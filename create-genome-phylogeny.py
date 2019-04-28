@@ -97,7 +97,7 @@ for fasta in fastas:
 print("Concatenating alignments...")
 alignments="results/*.aln"
 outname="results/"+DOMAIN+"-ribo-concatenated-phylogeny.fasta"
-cat_cmd = "perl catfasta2phyml.pl -f --concatenate "
+cat_cmd = "catfasta2phyml.pl -f --concatenate "
 cat_cmd += alignments+" > "+outname
 os.system(cat_cmd)
 
