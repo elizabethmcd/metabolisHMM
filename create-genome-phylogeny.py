@@ -89,7 +89,7 @@ fastas = glob.glob("results/*.faa")
 for fasta in fastas:
     outname = os.path.basename(fasta).replace(".faa", "").strip().splitlines()[0]
     output= "results/"+outname+".aln"
-    subprocess.call('mafft' + ' ' + fasta '>' + outfile, shell=True)
+    subprocess.call('mafft' + ' ' + fasta + '>' + outfile, shell=True)
 
 # Concatenate alignments
 print("Concatenating alignments...")
