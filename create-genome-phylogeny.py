@@ -110,7 +110,10 @@ if PHYTOOL == 'fastree':
     os.system(fastCmd)
 elif PHYTOOL == "raxml":
     print("Calculating tree with RaxML... be patient...")
-    outname= "results/"+DOMAIN+"-raxml-ribo"
+    outname= DOMAIN+"-raxml-ribo"
+    outDir = "results/"
     fileIn="results/"+DOMAIN+"-ribo-concatenated-phylogeny.fasta"
     raxCmd = "raxmlHPC-PTHREADS -f a -m PROTGAMMAAUTO -p 12345 -x 12345 -# 100 -s "+fileIn+" -T "+THREADS+" -n "+outname
     os.system(raxCmd)
+    mvCmd = "mv "+outname+outDir
+    os.system(mvCmd)
