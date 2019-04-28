@@ -43,7 +43,7 @@ for path, dirs, files in result_dir:
         genome = file.replace(".out", "").strip().splitlines()[0]
         result = "out/"+dir+"/"+file
         output="results/"+dir+".faa"
-        genome_file=GENOMDIR+genome+".faa"
+        genome_file=GENOMEDIR+genome+".faa"
         with open(output, "a") as outf:
             with open(genome_file, "r") as input_fasta:
                 with open(result, "r") as input:
