@@ -106,7 +106,7 @@ if PHYTOOL == 'fastree':
     print("Calculating tree using FastTree...")
     fileIn="results/"+DOMAIN+"-ribo-concatenated-phylogeny.fasta"
     outname = "results/"+DOMAIN+"-fastTree-ribosomal-tree.tre"
-    fastCmd = "FastTree "+fileIn+" > "+outname]
+    fastCmd = "FastTree "+fileIn+" > "+outname
     os.system(fastCmd)
 elif PHYTOOL == "raxml":
     print("Calculating tree with RaxML... be patient...")
