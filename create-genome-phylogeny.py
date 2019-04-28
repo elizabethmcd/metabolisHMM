@@ -89,14 +89,14 @@ fastas = glob.glob("results/*.faa")
 for fasta in fastas:
     outname = os.path.basename(fasta).replace(".faa", "").strip().splitlines()[0]
     output= "results/"+outname+".aln"
-    mafft_cmd = ["mafft",fasta,">",output]
-    subprocess.call(mafft_cmd)
+    subprocess.call('mafft' + ' ' + fasta '>' + outfile, shell=True)
 
 # Concatenate alignments
 print("Concatenating alignments...")
 alignments="results/*.aln"
 outname="results/"+DOMAIN+"-ribo-concatenated-phylogeny.fasta"
 cat_cmd = ["perl catfasta2phyml.pl","-f","--concatenate",alignments,">",outname]
+subprocess.call(cat_cmd)
 
 # Create tree
 if PHYTOOL == 'fastree':
@@ -104,8 +104,10 @@ if PHYTOOL == 'fastree':
     fileIn="results/"+DOMAIN+"-ribo-concatenated-phylogeny.fasta"
     outname = "results/"+DOMAIN+"-fastTree-ribosomal-tree.tre"
     fastCmd = ["FastTree",fileIn,">",outname]
+    subprocess.call(fastCmd)
 elif PHYTOOL == "raxml":
     print("Calculating tree with RaxML... be patient...")
     outname= "results/"+DOMAIN+"-raxml-ribo"
     fileIn="results/"+DOMAIN+"-ribo-concatenated-phylogeny.fasta"
     raxCmd = ["raxmlHPC-PTHREADS","-f","a","-m","PROTGAMMAAUTO","-p","12345","-x","12345","-#","100","-s",fileIn,"-T",THREADS,"-n",outname]
+    subprocess.call(raxCmd)
