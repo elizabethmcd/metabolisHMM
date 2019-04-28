@@ -97,8 +97,9 @@ for fasta in fastas:
 print("Concatenating alignments...")
 alignments="results/*.aln"
 outname="results/"+DOMAIN+"-ribo-concatenated-phylogeny.fasta"
-cat_cmd = ["perl catfasta2phyml.pl","-f","--concatenate",alignments,">",outname]
-subprocess.call(cat_cmd)
+cat_cmd = "perl catfasta2phyml.pl -f --concatenate "
+cat_cmd += alignments+" > "+outname
+os.system(cat_cmd)
 
 # Create tree
 if PHYTOOL == 'fastree':
