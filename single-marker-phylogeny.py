@@ -2,13 +2,26 @@
 
 import os, sys
 import glob 
+import argparse
 import subprocess 
 from Bio import SeqIO, SearchIO
 
+parser = argparse.ArgumentParser(description = "Create phylogeny of single marker")
+parser.add_argument('--genome_dir', metavar='GENOMEDIR', help='Directory where genomes to be screened are held')
+parser.add_argument('--marker', metavar='MARKER', help="Location of single marker to run analysis on")
+parser.add_argument('--phylogeny', metavar='PHY', help="fastree or raxml, choose one")
+parser.add_argument("--threads",metavar='THREADS',help="number of threads for tree making")
+
+args = parser.parse_args()
+GENOMEDIR = args.genome_dir
+MARKER = args.marker
+PHYTOOL = args.phylogeny
+THREADS = args.threads
+
 os.mkdir("out")
 os.mkdir("results")
-genomes=glob.glob("genomes/*.faa")
-marker=sys.argv[1]
+genomes=glob.glob(os.path.join(GENOMEDIR, '*.faa'))
+marker=MARKER
 FNULL = open(os.devnull, 'w')
 prot=os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
 dir=prot
@@ -54,9 +67,17 @@ for fasta in fastas:
     subprocess.call(musc_cmd)
 
 # Make tree 
-print("Constructing phylogeny...")
-marker_name = os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
-alignment_file = "results/"+marker_name+".aln"
-output_tree="results/"+marker_name+".tre"
-tree_cmd = ["FastTree","-out",output_tree,alignment_file]
-subprocess.call(tree_cmd)
+if PHYTOOL == 'fastree':
+    print("Calculating tree using FastTree...")
+    marker_name = os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
+    alignment_file = "results/"+marker_name+".aln"
+    output_tree="results/"+marker_name+".tre"
+    tree_cmd = ["FastTree","-out",output_tree,alignment_file]
+    subprocess.call(tree_cmd)
+elif PHYTOOL == "raxml":
+    print("Calculating tree with RaxML... be patient...")
+    marker_name = os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
+    outname= marker_name+"raxml"
+    fileIn="results/"+marker_name+".aln"
+    raxCmd = "raxmlHPC-PTHREADS -f a -m PROTGAMMAAUTO -p 12345 -x 12345 -# 100 -s "+fileIn+" -T "+THREADS+" -n "+outname
+    os.system(raxCmd)

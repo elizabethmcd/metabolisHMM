@@ -4,11 +4,9 @@ A tool for summarizing metabolic capabilities and creating phylogenies of genome
 
 ## Dependencies and Setup 
 
-- python
-  - BioPython
-  - pandas
+- python (Biopython)
 - HMMer
-- Mafft
+- MUSCLE/Mafft
 - [catfasta2phyml](https://github.com/nylander/catfasta2phyml)
 - FastTree/RaxML
 
