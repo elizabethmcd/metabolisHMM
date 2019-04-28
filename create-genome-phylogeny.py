@@ -112,5 +112,5 @@ elif PHYTOOL == "raxml":
     print("Calculating tree with RaxML... be patient...")
     outname= "results/"+DOMAIN+"-raxml-ribo"
     fileIn="results/"+DOMAIN+"-ribo-concatenated-phylogeny.fasta"
-    raxCmd = "raxmlHPC-PTHREADS -f a -m PROTGAMMAAUTO -p 12345 -x 12345 -# 100 -s "+fileIn+"-T"+THREADS+"-n"+outname
+    raxCmd = "raxmlHPC-PTHREADS -f a -m PROTGAMMAAUTO -p 12345 -x 12345 -# 100 -s "+fileIn+" -T "+THREADS+" -n "+outname
     os.system(raxCmd)
