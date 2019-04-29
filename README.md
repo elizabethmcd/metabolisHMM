@@ -21,7 +21,7 @@ To get metabolic summaries of your genomes, run `python summarize-metabolism.py`
 To create a genome phylogeny on the given genomes based on ribosomal protein markers, run `python create-genome-phylogeny.py`. 
 
 ```
-usage: python create-genome-phylogeny.py --genome-dir --domain --phylogeny --threads
+usage: python create-genome-phylogeny.py --genome_dir --domain --phylogeny --threads
 Creates full archaeal/bacterial genome phylogenies based off specific ribosomal protein markers
 arguments:
   --genome_dir Directory where genomes to be screened are held
