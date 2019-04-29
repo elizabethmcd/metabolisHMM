@@ -21,13 +21,13 @@ To get metabolic summaries of your genomes, run `python summarize-metabolism.py`
 To create a genome phylogeny on the given genomes based on ribosomal protein markers, run `python create-genome-phylogeny.py`. 
 
 ```
-usage: python create-genome-phylogeny.py --genome-dir --domain
+usage: python create-genome-phylogeny.py --genome-dir --domain --phylogeny --threads
 Creates full archaeal/bacterial genome phylogenies based off specific ribosomal protein markers
 arguments:
   --genome_dir Directory where genomes to be screened are held
   --domain archaea, bacteria
   --phylogeny fastree, raxml
-  --threads #threads for calculating phylogeny
+  --threads #threads for performing alignments and calculating phylogeny
 ```
 
 ## Phylogeny of a single marker
@@ -35,7 +35,13 @@ arguments:
 Say you are interested in the phylogenetic distribution of a particular marker (nifA for example) amongst your genomes. Use the script `single-marker-phylogeny.py` and the path to your marker of interest. You can put it in the `metabolic-markers` directory to be run with others for metabolic summaries, or have it in a different location. The usage is: 
 
 ```
-python single-marker-phylogeny.py path-to-marker/marker.hmm
+usage: python single-marker-phylogeny.py --genome_dir --marker --phylogeny --threads
+Creates phylogeny of a single marker against given set of genomes
+arguments:
+  --genome_dir Directory where genomes to be screened are held
+  --marker directory/name of specific marker to be screened
+  --phylogeny fastree, raxml
+  --threads #threads for calculating phylogeny
 ```
 
 ## Caveats 
