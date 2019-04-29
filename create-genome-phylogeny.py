@@ -89,7 +89,7 @@ fastas = glob.glob("results/*.faa")
 for fasta in fastas:
     outname = os.path.basename(fasta).replace(".faa", "").strip().splitlines()[0]
     output= "results/"+outname+".aln"
-    mafft_cmd = "mafft --quiet --threads "+THREADS
+    mafft_cmd = "mafft --quiet "
     mafft_cmd += fasta+" > "+output
     os.system(mafft_cmd)
 
