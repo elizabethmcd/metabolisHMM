@@ -2,18 +2,26 @@
 
 import os, sys
 import glob 
+import argparse
 import subprocess 
 import pandas as pd 
 from Bio import SearchIO
 
-# Arguments 
-DIR=sys.argv[1]
+# Arguments and Setup
+parser = argparse.ArgumentParser(description = "Search custom direcotory of HMMs")
+parser.add_argument('--genome_dir', metavar='GENOMEDIR', help='Directory where genomes to be screened are held')
+parser.add_argument('--markers_dir', metavar='MARKERDIR', help="Direcotory where markers are held")
+parser.add_argument('--output', metavar='OUTFILE', default="custom-metabolic-markers-results.txt", help="Name of output file of results")
 
-# Setup
-genomes=glob.glob("genomes/*.faa")
-markers=glob.glob(os.path.join(DIR, '*.hmm'))
-# os.mkdir("out")
-# os.mkdir("results")
+args = parser.parse_args()
+GENOMEDIR = args.genome_dir
+MARKERDIR = args.markers_dir
+OUTFILE = args.output
+
+os.mkdir("out")
+os.mkdir("results")
+genomes=glob.glob(os.path.join(GENOMEDIR, '*.faa'))
+markers=glob.glob(os.path.join(MARKERDIR, "*.hmm"))
 FNULL = open(os.devnull, 'w')
 
 # Run HMMs
@@ -58,4 +66,4 @@ for col in existing_markers:
     all_cols.append(col)
 df_all=df.reindex(columns=all_cols)
 df_all.fillna(0, inplace=True)
-df_all.to_csv("results/metabolic-marker-results.csv")
+df_all.to_csv(OUTFILE)
