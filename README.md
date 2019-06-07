@@ -14,7 +14,24 @@ To run the pipeline, clone the repository with `git clone https://github.com/eli
 
 ## Metabolic Summaries
 
-To get metabolic summaries of your genomes, run `python summarize-metabolism.py`. This will create a summary table of each metabolic marker and how many hits were found above the given threshold in all of your genomes. If you want to run the summary on a specific set of markers outside of those included here (such as a specific pathway - e.g. Wood Ljungdhal as provided), use `python search-custom-markers.py path-to-markers/`. This will place the columns in alphabetical order of markers, and not necessarily the order of the pathway.
+To get metabolic summaries of your genomes, run `python summarize-metabolism.py`. 
+```
+usage: python summarize-metabolism.py --genome_dir --output
+  --genome_dir Directory where genomes to be screened are held
+  --output Name of summary results file
+```
+
+This will create a summary table of each metabolic marker and how many hits were found above the given threshold in all of your genomes. 
+
+If you want to run the summary on a specific set of markers outside of those included here (such as a specific pathway - e.g. Wood Ljungdhal as provided), use `python search-custom-markers.py`. 
+```
+usage: python search-custom-markers.py --genome_dir --markers_dir --output
+  --genome_dir Directory where genomes to be screened are held
+  --marker_dir Directory where custom markers are held
+  --output Name of results file
+```
+
+This will place the columns in alphabetical order of markers, and not necessarily the order of the pathway.
 
 ## Genome Phylogenies
 
