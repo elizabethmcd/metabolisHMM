@@ -1,5 +1,6 @@
 HMMER3/f [3.1b2 | February 2015]
-NAME  fwdALENG  555
+NAME  fwdA
+LENG  555
 ALPH  amino
 RF    no
 MM    no
