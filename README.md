@@ -27,7 +27,7 @@ If you want to run the summary on a specific set of markers outside of those inc
 ```
 usage: python search-custom-markers.py --genome_dir --markers_dir --output
   --genome_dir Directory where genomes to be screened are held
-  --marker_dir Directory where custom markers are held
+  --markers_dir Directory where custom markers are held
   --output Name of results file
 ```
 
