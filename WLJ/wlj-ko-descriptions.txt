@@ -11,7 +11,6 @@ K00194	155.17	full	all	0.990353	188	154	821	328	1.57	0.590	acetyl-CoA decarbonyl
 K00192	377.20	full	trim	0.966322	119	97	904	779	0.92	0.591	anaerobic carbon-monoxide dehydrogenase, CODH/ACS complex subunit alpha [EC:1.2.7.4]
 K00195	104.90	full	all	1.000000	104	86	230	174	2.09	0.590	anaerobic carbon-monoxide dehydrogenase, CODH/ACS complex subunit epsilon
 K00193	592.23	full	all	0.864312	115	103	911	444	1.15	0.590	acetyl-CoA decarbonylase/synthase, CODH/ACS complex subunit beta [EC:2.3.1.169]
-K00194	155.17	full	all	0.990353	188	154	821	328	1.57	0.590	acetyl-CoA decarbonylase/synthase, CODH/ACS complex subunit delta [EC:2.1.1.245]
 K00200	251.83	full	all	1.000000	289	272	917	555	1.76	0.590	formylmethanofuran dehydrogenase subunit A [EC:1.2.7.12]
 K00201	173.47	full	all	0.998435	357	321	1008	429	4.06	0.590	formylmethanofuran dehydrogenase subunit B [EC:1.2.7.12]
 K00202	104.00	domain	all	0.991995	333	313	810	263	3.17	0.590	formylmethanofuran dehydrogenase subunit C [EC:1.2.7.12]
