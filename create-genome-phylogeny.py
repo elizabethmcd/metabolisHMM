@@ -77,11 +77,11 @@ for prot in prot_list:
                             hits=qresult.hits
                             num_hits=len(hits)
                             if num_hits >0:
-                                for i in range(0, 1):
+                                for i in range(0,1):
                                     hit_id=hits[i].id
-                            for record in SeqIO.parse(input_fasta, "fasta"):
-                                if record.id in hit_id:
-                                    outf.write(">"+genome+"\n"+str(record.seq)+"\n")
+                                for record in SeqIO.parse(input_fasta, "fasta"):
+                                    if record.id in hit_id:
+                                        outf.write(">"+genome+"\n"+str(record.seq)+"\n")
                        
 # Make alignment file
 print("Aligning concatenated hits...")
