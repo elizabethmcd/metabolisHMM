@@ -62,7 +62,7 @@ for path, dirs, files in result_dir:
                             for record in SeqIO.parse(input_fasta, "fasta"):
                                 if record.id in hit_id:
                                     outf.write(">"+genome+"\n"+str(record.seq)+"\n")
-                                    OUT_LIST.write('%s\t%s\n' (% genome, record.id))
+                                    OUT_LIST.write('%s\t%s\n' % (genome, record.id))
 
 # Align hits 
 print("Aligning hits...")
