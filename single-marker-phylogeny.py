@@ -9,6 +9,7 @@ from Bio import SeqIO, SearchIO
 parser = argparse.ArgumentParser(description = "Create phylogeny of single marker")
 parser.add_argument('--genome_dir', metavar='GENOMEDIR', help='Directory where genomes to be screened are held')
 parser.add_argument('--marker', metavar='MARKER', help="Location of single marker to run analysis on")
+parser.add_argument('--list', default='hit_list.txt', help="Output list of hits locus tags")
 parser.add_argument('--phylogeny', metavar='PHY', help="fastree or raxml, choose one")
 parser.add_argument("--threads",metavar='THREADS',help="number of threads for tree making")
 
@@ -26,6 +27,11 @@ FNULL = open(os.devnull, 'w')
 prot=os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
 dir=prot
 os.mkdir("out/"+dir)
+
+# list of hits
+list_dir = "results" + args.hits
+OUT_LIST = (list_dir, "w")
+OUT_LIST.write("genome\tlocus_tag\n")
 
 # Run HMM for a single marker
 print("Searching for " + prot + " marker in genome set...")
@@ -56,6 +62,7 @@ for path, dirs, files in result_dir:
                             for record in SeqIO.parse(input_fasta, "fasta"):
                                 if record.id in hit_id:
                                     outf.write(">"+genome+"\n"+str(record.seq)+"\n")
+                                    OUT_LIST.write('%s\t%s\n' (% genome, record.id))
 
 # Align hits 
 print("Aligning hits...")
