@@ -29,7 +29,7 @@ dir=prot
 os.mkdir("out/"+dir)
 
 # list of hits
-list_dir = "results" + args.hits
+list_dir = "results" + args.list
 OUT_LIST = (list_dir, "w")
 OUT_LIST.write("genome\tlocus_tag\n")
 
