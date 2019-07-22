@@ -29,8 +29,8 @@ dir=prot
 os.mkdir("out/"+dir)
 
 # list of hits
-OUT_LIST = (args.list, "w")
-OUT_LIST.write("genome\tlocus_tag\n")
+OUT_LIST = open(args.list, "w")
+OUT_LIST.write ("genome\tlocus_tag\n")
 
 # Run HMM for a single marker
 print("Searching for " + prot + " marker in genome set...")
