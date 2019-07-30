@@ -52,11 +52,12 @@ arguments:
 Say you are interested in the phylogenetic distribution of a particular marker (nifA for example) amongst your genomes. Use the script `single-marker-phylogeny.py` and the path to your marker of interest. You can put it in the `metabolic-markers` directory to be run with others for metabolic summaries, or have it in a different location. The usage is: 
 
 ```
-usage: python single-marker-phylogeny.py --genome_dir --marker --phylogeny --threads
+usage: python single-marker-phylogeny.py --genome_dir --marker --list --phylogeny --threads
 Creates phylogeny of a single marker against given set of genomes
 arguments:
   --genome_dir Directory where genomes to be screened are held
   --marker directory/name of specific marker to be screened
+  --list name of list with marker hits
   --phylogeny fastree, raxml
   --threads #threads for calculating phylogeny
 ```
