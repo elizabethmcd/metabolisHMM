@@ -1,5 +1,13 @@
 #! /usr/bin/env python 
 
+###############################################################
+# metabolisHMM - A tool for exploring and visualizing the distribution and evolutionary histories of metabolic markers
+# search-custom-markers to get statistics and visualization of a set of HMM markers
+# Written by Elizabeth McDaniel emcdaniel@wisc.edu
+# November 2018
+# This program is free software under the GNU General Public License version 3.0
+###############################################################
+
 import os, sys
 import glob 
 import argparse

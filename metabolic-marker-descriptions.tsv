@@ -1,0 +1,84 @@
+marker  functional_group    function
+ndma_methanol_dehydrogenase_TIGR04266   carbon  methanol oxidation
+madA_TIGR02659  carbon  methylamine > formaldehyde
+madB_TIGR02658  carbon  methylamine > formaldehyde
+fdh_thiol_id_TIGR02819  carbon  formaldehyde oxidation
+sfh_TIGR02821   carbon  formaldehyde oxidation
+sgdh_TIGR02818  carbon  formaldehyde oxidation
+smdh_TIGR03451  carbon  formaldehyde oxidation
+fae_TIGR03126   carbon  formaldehyde oxidation
+fmtf_TIGR03119  carbon  formaldehyde oxidation
+mtmc_TIGR03120  carbon  formaldehyde oxidation
+fdhA_TIGR01591  carbon  formate oxidation
+fdhB_TIGR01582  carbon  formate oxidation
+fdhC_TIGR01583  carbon  formate oxidation
+carbon_monoxide_dehydrogenase_coxL_TIGR02416    carbon co2 oxidation
+carbon_monoxide_dehydrogenase_coxM  carbon  co2 oxidation
+carbon_monoxide_dehydrogenase_coxS  carbon co2 oxidation
+rubisco_form_I  carbon  CBB
+rubisco_form_II carbon  CBB
+rubisco_form_III    carbon  CBB
+rubisco_form_II_III carbon  CBB
+rubisco_form_IV carbon  CBB
+codhC_TIGR00316 carbon  WLJ
+codhD_TIGR00381 carbon  WLJ
+codh_catalytic_TIGR01702    carbon  WLJ
+acetate_citrate_lyase_aclA  carbon  RTCA
+acetate_citrate_lyase_aclB  carbon  RTCA
+nifA_Mo_TIGR01282   nitrogen    nitrogen fixation
+nifB_Mo_TIGR01286   nitrogen    nitrogen fixation
+nifH_TIGR01287  nitrogen    nitrogen fixation
+nitrite_oxidoreductase_nxrA nitrogen    nitrogen fixation
+nitrite_oxidoreductase_nxrB nitrogen nitrogen fixation
+napA_TIGR01706  nitrogen    nitrate reduction
+napB_PF03892    nitrogen    nitrate reduction
+narG_TIGR01580  nitrogen    nitrate reduction
+narH_TIGR01660  nitrogen    nitrate reduction
+nrfA_TIGR03152    nitrogen    nitrite reduction
+nrfH_TIGR03153  nitrogen    nitrite reduction
+nirB_TIGR02374  nitrogen    nitrite reduction
+nirD_TIGR02378  nitrogen    nitrite reduction
+nirK_TIGR02376  nitrogen    nitrite reduction
+nitrite_reductase_nirS  nitrogen    nitrite reduction
+nitric_oxide_reductase_norB nitrogen    nitric oxide reduction
+nitric_oxide_reductase_norC nitrogen    nitric oxide reduction
+nosD_TIGR04247  nitrogen    nitrous oxide reduction
+nosZ_TIGR04246  nitrogen    nitrous oxide reduction
+hydrazine_oxidase_hzoA  nitrogen    anammox
+hydrazine_synthase_hzsA nitrogen    anammox
+fccB_PF09242    sulfur  sulfide oxidation
+sulfide_quinone_oxidoreductase_sqr  sulfur  sulfide oxidation
+sulfur_dioxygenase_sdo  sulfur  sulfur oxidation
+aprA_TIGR02061  sulfur  sulfate reduction
+sat_TIGR00339   sulfur  sulfate reduction
+dsrA_TIGR02064  sulfur  dissimilatory sulfur oxidation
+dsrB_TIGR02066  sulfur  dissimilatory sulfur oxidation
+dsrD_PF08679    sulfur  dissimilatory sulfite reduction
+thiosulfate_reductase_phsA  sulfur  thiosulfate reduction
+soxB_TIGR04486  sulfur  thiosulfate reduction
+soxC_TIGR04555  sulfur  thiosulfate reduction
+soxY_TIGR04488  sulfur  thiosulfate reduction
+coxA_TIGR02891  oxygen  cytochrome c oxidase caa3 type
+coxB_TIGR02866  oxygen  cytochrome c oxidase caa3 type
+ccoN_TIGR00780  oxygen  cytochrome c oxidase cbb3 type
+ccoO_TIGR00781  oxygen  cytochrome c oxidase cbb3 type
+ccoP_TIGR00782  oxygen  cytochrome c oxidase cbb3 type
+cyoA_TIGR01433  oxygen  cytochrome c oxidase bo type
+cyoD_TIGR02847  oxygen  cytochrome c oxidase bo type
+cyoE_TIGR01473  oxygen  cytochrome c oxidase bo type
+cydA_PF01654    oxygen  cytochrome c quinone oxidase bd type
+cydB_TIGR00203  oxygen  cytochrome c quinone oxidase bd type
+qoxA_TIGR01432  oxygen  cytochrome c oxidase quinone aa3 type
+FeFeHydrogenase_TIGR02512   hydrogen    FeFe hydrogenase
+FeFeHydrogenase_TIGR04105   hydrogen    FeFe hydrogenase
+Hydrogenase_Group_1 hydrogen    NiFe Hydrogenase
+Hydrogenase_Group_2a    hydrogen    NiFe Hydrogenase
+Hydrogenase_Group_2b    hydrogen    NiFe Hydrogenase
+Hydrogenase_Group_3a    hydrogen    NiFe Hydrogenase
+Hydrogenase_Group_3b    hydrogen    NiFe Hydrogenase
+Hydrogenase_Group_3c    hydrogen    NiFe Hydrogenase
+Hydrogenase_Group_3d    hydrogen    NiFe Hydrogenase
+Hydrogenase_Group_4 hydrogen    NiFe Hydrogenase
+
+
+

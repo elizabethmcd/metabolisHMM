@@ -1,5 +1,14 @@
 #! /usr/bin/env python 
 
+
+###############################################################
+# metabolisHMM - A tool for exploring and visualizing the distribution and evolutionary histories of metabolic markers
+# create-genome-phylogeny: to create a phylogeny based on ribosomal proteins
+# Written by Elizabeth McDaniel emcdaniel@wisc.edu
+# November 2018
+# This program is free software under the GNU General Public License version 3.0
+###############################################################
+
 import glob, argparse, subprocess, os, sys, tempfile
 from Bio import BiopythonExperimentalWarning
 import warnings
@@ -21,6 +30,17 @@ required.add_argument('--output', metavar='OUTPUT', help='Directory to store res
 required.add_argument('--domain', metavar='DOMAIN', help='archaea, bacteria, all')
 required.add_argument('--phylogeny', metavar='PHY', help='fastree, raxml')
 optional.add_argument('--threads',metavar='THREADS',help='Optional: number of threads for calculating a tree using RAxML. This is not taken into account using Fastree')
+
+# if no arguments given, print help message
+if len(sys.argv) < 2:
+    parser.print_help()
+    sys.exit(1)
+
+# version to print
+def version():
+    versionFile = open('VERSION')
+    return versionFile.read()
+VERSION = version()
 
 args = parser.parse_args()
 GENOMEDIR = args.input
@@ -49,6 +69,11 @@ elif DOMAIN == 'bacteria':
     prot_list=bacteria_list
 elif DOMAIN == 'all': 
     prot_list=all_list
+
+# Beginning message
+print('')
+print('#############################################')
+print('metabolisHMM v' + VERSION)
 
 # setup hmmsearch run depending on HMM list
 print("Running ribosomal protein HMM searches...")
@@ -106,7 +131,7 @@ for fasta in fastas:
 # Concatenate alignments
 print("Concatenating alignments...")
 # referred to the biopython cookbook for concatenating multiple sequence alignments 
-# adds questions marks for missing loci for a given genome
+# adds question marks for missing loci for a given genome
 prot_alignments = OUTPUT + "/results/*.aln"
 infiles = glob.glob(prot_alignments)
 concatout = OUTPUT + "/out/"+DOMAIN+"-concatenated-ribosomal-alignment.fasta"
@@ -144,3 +169,7 @@ elif PHYTOOL == "raxml":
     fileIn=OUTPUT + "/results/"+DOMAIN+"concatenated-ribosomal-alignment-reformatted.fasta"
     raxCmd = "raxmlHPC-PTHREADS -f a -m PROTGAMMAAUTO -p 12345 -x 12345 -# 100 -s "+fileIn+" -T "+THREADS+" -n "+outname
     os.system(raxCmd)
+
+# end message
+print("Done! Find your results in "+ OUTPUT + "/results/")
+print('#############################################')
