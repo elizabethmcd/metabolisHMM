@@ -4,11 +4,11 @@ A tool for summarizing metabolic capabilities and creating phylogenies of genome
 
 ## Dependencies and Setup 
 
-- python (Biopython)
-- HMMer
-- MUSCLE/Mafft
-- [catfasta2phyml](https://github.com/nylander/catfasta2phyml)
-- FastTree/RaxML
+- [python (>3.6) (Biopython, pandas)](https://www.anaconda.com/)
+- [HMMER](http://hmmer.org/)
+- [Mafft](https://mafft.cbrc.jp/alignment/software/)
+- [FastTree](http://www.microbesonline.org/fasttree/)
+- [RaxML](https://cme.h-its.org/exelixis/software.html)
 
 To run the pipeline, clone the repository with `git clone https://github.com/elizabethmcd/metabolisHMM`. This will provide you with the necessary scripts and HMM markers to run the analysis on a given set of genomes. If your filenames have dashes `-` in them, rename them for example with underscores instead, with `rename 's/-/_/g' *`. You will need all of the above programs in your path, including the `catfasta2phyml` perl script.
 
@@ -41,10 +41,11 @@ To create a genome phylogeny on the given genomes based on ribosomal protein mar
 usage: python create-genome-phylogeny.py --genome_dir --domain --phylogeny --threads
 Creates full archaeal/bacterial genome phylogenies based off specific ribosomal protein markers
 arguments:
-  --genome_dir Directory where genomes to be screened are held
-  --domain archaea, bacteria
+  --input Directory where genomes to be screened are held
+  --output Directory to hold intermediate files and results
+  --domain archaea, bacteria, all
   --phylogeny fastree, raxml
-  --threads #threads for performing alignments and calculating phylogeny
+  --threads #threads for performing alignments and calculating phylogeny with raxml, doesn't matter for fastree
 ```
 
 ## Phylogeny of a single marker
