@@ -79,6 +79,4 @@ The ribosomal protein markers were also used for the expanded view of the tree o
 
 2. A new view of the tree of life. L. Hug et al. _Nature Microbiology_. 2016.
 
-All credit for the concatenation script goes to John Nylander, as it works very nicely and quickly for these purposes. 
-
 The code and released HMM profiles are free to use for any purposes. Feel free to submit an issue with any questions or something I glaringly did wrong! 
