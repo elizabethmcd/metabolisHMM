@@ -22,9 +22,9 @@ parser._action_groups.pop()
 required = parser.add_argument_group("required arguments")
 optional = parser.add_argument_group("optional arguments")
 required.add_argument('--input', metavar='GENOMEDIR', help='Directory where genomes to be screened are held')
-required.add_argument('--output', metavar='OUTPUT', help="Directory to sotre results and intermediate files")
+required.add_argument('--output', metavar='OUTPUT', help="Directory to store results and intermediate files")
 optional.add_argument('--summary', metavar='OUTFILE', default="metabolic-summary-results.csv", help="Summary file of metabolic marker statistics in CSV format")
-optional.add_argument('--heatmap', metavar='HEATOUT', default='metabolic-summary-results-heatmap.pdf', help="Summary heatmap of metabolic markers" )
+optional.add_argument('--heatmap', metavar='HEATOUT', default='metabolic-summary-results-heatmap.pdf', help="Summary heatmap of metabolic markers in PDF format. If you provide a custom name, it must end in .pdf" )
 optional.add_argument('--metadata', metavar='METADATA', help='Metadata file with taxonomical classifications or groups associated with genome file names')
 optional.add_argument('--aggregate', metavar='AGG', default='OFF', help="Aggregate metadata names by group = ON, visualize each genome individually = OFF" )
 
@@ -109,8 +109,6 @@ out_stats = OUTPUT + "/results/" + OUTFILE
 df_final.to_csv(out_stats)
 
 print("Plotting results...")
-
-
 
 # end message
 print("Done! Find your results in "+ OUTPUT + "/results/")
