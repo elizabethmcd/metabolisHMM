@@ -25,7 +25,7 @@ required.add_argument('--input', metavar='GENOMEDIR', help='Directory where geno
 required.add_argument('--output', metavar='OUTPUT', help="Directory to store results and intermediate files")
 optional.add_argument('--summary', metavar='OUTFILE', default="metabolic-summary-results.csv", help="Summary file of metabolic marker statistics in CSV format")
 optional.add_argument('--heatmap', metavar='HEATOUT', default='metabolic-summary-results-heatmap.pdf', help="Summary heatmap of metabolic markers in PDF format. If you provide a custom name, it must end in .pdf" )
-optional.add_argument('--metadata', metavar='METADATA', help='Metadata file with taxonomical classifications or groups associated with genome file names')
+required.add_argument('--metadata', metavar='METADATA', help='Metadata file with taxonomical classifications or groups associated with genome file names. Needs to be a .csv file with the genome/filename (everything before .fna) and the group name.')
 optional.add_argument('--aggregate', metavar='AGG', default='OFF', help="Aggregate metadata names by group = ON, visualize each genome individually = OFF" )
 
 # if no arguments given, print help message
@@ -109,6 +109,11 @@ out_stats = OUTPUT + "/results/" + OUTFILE
 df_final.to_csv(out_stats)
 
 print("Plotting results...")
+METADATA = args.metadata
+FIGOUT = args.heatmap
+AGG = args.aggregate
+plot_cmd = ['Rscript','make-heatmap.R', out_stats, METADATA, AGG, FIGOUT]
+subprocess.call(plot_cmd, stdout=FNULL)
 
 # end message
 print("Done! Find your results in "+ OUTPUT + "/results/")

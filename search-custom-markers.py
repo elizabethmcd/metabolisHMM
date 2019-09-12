@@ -22,9 +22,9 @@ parser._action_groups.pop()
 required = parser.add_argument_group("required arguments")
 optional = parser.add_argument_group("optional arguments")
 required.add_argument('--input', metavar='GENOMEDIR', help='Directory where genomes to be screened are held')
-required.add_argument('--output', metavar='OUTFILE', default="custom-metabolic-markers-results.txt", help="Name of output file of results")
+required.add_argument('--output', metavar='OUTPUT', help="Directory to store results and intermediate files")
 required.add_argument('--markers_list', metavar='MARKERLIST', help="Ordered list of markers to run custom search on ")
-optional.add_argument('--summary', metavar='OUTFILE', default='custom-markers-results.csv' help='Output statistics of custom marker searches')
+optional.add_argument('--summary', metavar='OUTFILE', default='custom-markers-results.csv', help='Output statistics of custom marker searches in .csv format')
 optional.add_argument('--heatmap', metavar='HEATOUT', default='metabolic-summary-results-heatmap.pdf', help="Summary heatmap of metabolic markers in PDF format. If you provide a custom name, it must end in .pdf" )
 optional.add_argument('--metadata', metavar='METADATA', help='Metadata file with taxonomical classifications or groups associated with genome file names')
 optional.add_argument('--aggregate', metavar='AGG', default='OFF', help="Aggregate metadata names by group = ON, visualize each genome individually = OFF" )
@@ -41,8 +41,7 @@ def version():
 VERSION = version()
 
 args = parser.parse_args()
-GENOMEDIR = args.genome_dir
-MARKERDIR = args.markers_dir
+GENOMEDIR = args.inputs
 OUTFILE = args.output
 
 os.mkdir("out")
