@@ -141,7 +141,10 @@ tmp = defaultdict(list)
 for aln in alignments:
     length = aln.get_alignment_length()
     these_labels = set(rec.id for rec in aln)
+    n_loc = len(these_labels)
+    print(n_loc)
     missing = all_labels - these_labels
+    print(missing)
     for label in missing:
         new_seq = UnknownSeq(length)
         tmp[label].append(str(new_seq))

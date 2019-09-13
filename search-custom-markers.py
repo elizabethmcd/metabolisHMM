@@ -23,11 +23,13 @@ required = parser.add_argument_group("required arguments")
 optional = parser.add_argument_group("optional arguments")
 required.add_argument('--input', metavar='GENOMEDIR', help='Directory where genomes to be screened are held')
 required.add_argument('--output', metavar='OUTPUT', help="Directory to store results and intermediate files")
-required.add_argument('--markers_list', metavar='MARKERLIST', help="Ordered list of markers to run custom search on ")
+required.add_argument('--markers_dir', metavar='MARKERDIR', help="Directory where custom markers are held")
+required.add_argument('--markers_list', metavar='MARKERLIST', help="Ordered list of markers to run custom search on")
 optional.add_argument('--summary', metavar='OUTFILE', default='custom-markers-results.csv', help='Output statistics of custom marker searches in .csv format')
 optional.add_argument('--heatmap', metavar='HEATOUT', default='metabolic-summary-results-heatmap.pdf', help="Summary heatmap of metabolic markers in PDF format. If you provide a custom name, it must end in .pdf" )
-optional.add_argument('--metadata', metavar='METADATA', help='Metadata file with taxonomical classifications or groups associated with genome file names')
+required.add_argument('--metadata', metavar='METADATA', help='Metadata file with taxonomical classifications or groups associated with genome file names')
 optional.add_argument('--aggregate', metavar='AGG', default='OFF', help="Aggregate metadata names by group = ON, visualize each genome individually = OFF" )
+optional.add_argument('--kofam', metavar='KOFAM', help='Path to KofamKOALA description list with threshold cutoff scores to use with HMM profiles')
 
 # if no arguments given, print help message
 if len(sys.argv) < 2:
@@ -41,16 +43,28 @@ def version():
 VERSION = version()
 
 args = parser.parse_args()
-GENOMEDIR = args.inputs
+GENOMEDIR = args.input
 OUTFILE = args.output
-
-os.mkdir("out")
-os.mkdir("results")
+out_intm = OUTPUT + "/out"
+out_results = OUTPUT + "/results"
+os.makedirs(out_intm)
+os.makedirs(out_results)
 genomes=glob.glob(os.path.join(GENOMEDIR, '*.faa'))
-markers=glob.glob(os.path.join(MARKERDIR, "*.hmm"))
+# point to directory where markers are, and only run on specific markers (in case want run on a select subset in a larger directory, such as the KofamKOALA database)
+MARKER_DIR = args.markers_dir
+MARKERS_FILE = args.markers_list
+with open(MARKERS_FILE) as f:
+    files = f.read().splitlines()
+markers=glob.glob(os.path.join(MARKERDIR, files, "*.hmm"))
 FNULL = open(os.devnull, 'w')
 
+# Beginning message
+print('')
+print('#############################################')
+print('metabolisHMM v' + VERSION)
+
 # Run HMMs
+print("Running HMM searches using custom marker set...")
 for genome in genomes: 
     name=os.path.basename(genome).replace(".faa", "").strip().splitlines()[0]
     dir=name
@@ -60,7 +74,6 @@ for genome in genomes:
         outname= "out/"+dir+"/"+name + "-" + prot + ".out"
         cmd = ["hmmsearch","--cut_tc","--tblout="+outname, marker, genome]
         subprocess.call(cmd, stdout=FNULL)
-        print("Running HMMsearch on " + name + " and " + prot + " marker")
 
 # Parse HMM file to results matrix/dataframe
 print("Parsing all results...")
@@ -93,3 +106,8 @@ for col in existing_markers:
 df_all=df.reindex(columns=all_cols)
 df_all.fillna(0, inplace=True)
 df_all.to_csv(OUTFILE)
+
+print("Plotting results...")
+METADATA = args.metadata
+FIGOUT = args.heatmap
+AGG = args.aggregate
