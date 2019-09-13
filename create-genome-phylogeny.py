@@ -9,7 +9,7 @@
 # This program is free software under the GNU General Public License version 3.0
 ###############################################################
 
-import glob, argparse, subprocess, os, sys, tempfile
+import glob, argparse, subprocess, os, sys, tempfile, re
 from Bio import BiopythonExperimentalWarning
 import warnings
 with warnings.catch_warnings():
@@ -18,7 +18,7 @@ with warnings.catch_warnings():
 from Bio.Align import MultipleSeqAlignment
 from Bio.Seq import UnknownSeq, Seq
 from Bio.SeqRecord import SeqRecord
-from collections import defaultdict
+from collections import defaultdict, Counter
 
 # Arguments
 parser = argparse.ArgumentParser(description = "Create ribosomal phylogenies using specific ribosomal markers for archaea and/or bacteria")
@@ -141,18 +141,30 @@ tmp = defaultdict(list)
 for aln in alignments:
     length = aln.get_alignment_length()
     these_labels = set(rec.id for rec in aln)
-    n_loc = len(these_labels)
-    print(n_loc)
     missing = all_labels - these_labels
-    print(missing)
     for label in missing:
-        new_seq = UnknownSeq(length)
+        new_seq = UnknownSeq(length) # prints ? marks for missing
         tmp[label].append(str(new_seq))
     for rec in aln:
         tmp[rec.id].append(str(rec.seq))
 msa = MultipleSeqAlignment(SeqRecord(Seq(''.join(v)), id=k)
             for (k,v) in tmp.items())
 AlignIO.write(msa,concatout,"fasta")
+
+# check number of loci for a genome and print if less than a certain number to alert the user
+counts = dict()
+for file in infiles:
+    with open(file) as f:
+        for line in f:
+            if line.startswith(">"):
+                id = line.strip('\n').strip('>')
+                counts[id] = counts.get(id, 0) + 1
+
+# add argument for this so the user can know if they want a different value, but set a default value
+x = 10
+for (k,v) in counts.items():
+    if v < x:
+        print("\t" + 'Genome '+ k + ' has fewer than ' + str(x) + ' hits!')
 
 # get rid of "unknown description" descriptor in alignment file that biopython adds and I haven't figured out how to remove
 reformatout=OUTPUT + "/results/"+DOMAIN+"-concatenated-ribosomal-alignment-reformatted.fasta"
