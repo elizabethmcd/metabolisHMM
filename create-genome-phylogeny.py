@@ -30,6 +30,7 @@ required.add_argument('--output', metavar='OUTPUT', help='Directory to store res
 required.add_argument('--domain', metavar='DOMAIN', help='archaea, bacteria, all')
 required.add_argument('--phylogeny', metavar='PHY', help='fastree, raxml')
 optional.add_argument('--threads',metavar='THREADS',help='Optional: number of threads for calculating a tree using RAxML. This is not taken into account using Fastree')
+optional.add_argument('--loci', metavar='LOCI', default='12', help='Output genomes with less than x number of loci. By default prints genomes that have less than 12 ribosomal loci markers.')
 
 # if no arguments given, print help message
 if len(sys.argv) < 2:
@@ -161,7 +162,7 @@ for file in infiles:
                 counts[id] = counts.get(id, 0) + 1
 
 # add argument for this so the user can know if they want a different value, but set a default value
-x = 10
+x = int(args.loci)
 for (k,v) in counts.items():
     if v < x:
         print("\t" + 'Genome '+ k + ' has fewer than ' + str(x) + ' hits!')
@@ -176,7 +177,7 @@ if PHYTOOL == 'fastree':
     print("Calculating tree using FastTree...")
     fileIn=OUTPUT + "/results/"+DOMAIN+"-concatenated-ribosomal-alignment-reformatted.fasta"
     outname = OUTPUT + "/results/"+DOMAIN+"-fastTree-ribosomal-tree.tre"
-    fastCmd = "FastTree -quiet "+fileIn+" > "+outname
+    fastCmd = "FastTree -quiet -nopr "+fileIn+" > "+outname
     os.system(fastCmd)
 elif PHYTOOL == "raxml":
     print("Calculating tree with RaxML... be patient...")
