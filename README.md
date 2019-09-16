@@ -1,6 +1,14 @@
-# metabolisHMM
+<img align="right" width="400" src="https://github.com/elizabethmcd/metabolisHMM/blob/master/data/metabolisHMM-logo.png">
 
-A tool for summarizing metabolic capabilities and creating phylogenies of genomes based on manually curated markers.
+<br>
+<br>
+<br>
+
+---
+
+# metabolisHMM: a tool for summarizing metabolic distributions and relationships
+
+metabolisHMM is a pipeline for visualizing the distribution and evolutionary relationships of specific metabolic markers using Hidden Markov Model (HMM) profiles. Annotation through HMMs is becoming increasingly popular over BLAST-based methods, however methods for rapidly visualizing and summarizing these results is lacking. This software automates the process of searching any set of metabolic markers that have an HMM built against a set of genomes, and outputs phylogenies, summary statistics, and heatmap distributions. The metabolisHMM software is primarily written in python for performing pipeline steps and parsing results, with R visualization steps added for producing heatmaps. 
 
 ## Dependencies and Setup 
 
@@ -9,8 +17,9 @@ A tool for summarizing metabolic capabilities and creating phylogenies of genome
 - [Mafft](https://mafft.cbrc.jp/alignment/software/)
 - [FastTree](http://www.microbesonline.org/fasttree/)
 - [RaxML](https://cme.h-its.org/exelixis/software.html)
+- [R (tidyverse, reshape2)](https://cran.r-project.org/)
 
-To run the pipeline, clone the repository with `git clone https://github.com/elizabethmcd/metabolisHMM`. This will provide you with the necessary scripts and HMM markers to run the analysis on a given set of genomes. If your filenames have dashes `-` in them, rename them for example with underscores instead, with `rename 's/-/_/g' *`. You will need all of the above programs in your path, including the `catfasta2phyml` perl script.
+To run the pipeline, clone the repository with `git clone https://github.com/elizabethmcd/metabolisHMM`. This will provide you with the necessary scripts and HMM markers to run the analysis on a given set of genomes. If your filenames have dashes `-` in them, rename them for example with underscores instead, with `rename 's/-/_/g' *`.
 
 ## Metabolic Summaries
 
@@ -62,10 +71,6 @@ arguments:
   --phylogeny fastree, raxml
   --threads #threads for calculating phylogeny
 ```
-
-## Caveats 
-
-This tool is still under active development, and may contain bugs here and there, so you will want to perform some sanity-checks manually. All HMMer results are in the `out` folder and split by genome. For metabolic marker genes, hits are recordered if they are above the "TC" threshold that we manually defined. For ribosomal marker genes for making genome phylogenies, the best hit is taken so that for every genome and ribosomal marker, only one hit is taken into account. For MAGs with multiple hits, you may want to check if a certain hit falls on the end of a contig and is not truly the "best" hit.  
 
 ## References 
 
