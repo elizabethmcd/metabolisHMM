@@ -43,20 +43,24 @@ def version():
     return versionFile.read()
 VERSION = version()
 
+# arguments setup
 args = parser.parse_args()
 GENOMEDIR = args.input
-GENOMEFILES = args.input + "/*.faa"
+GENOMEFILES = args.input + "*.faa"
 DOMAIN = args.domain
 PHYTOOL = args.phylogeny
 THREADS = args.threads
 OUTPUT = args.output
 out_intm = OUTPUT + "/out"
 out_results = OUTPUT + "/results"
+out_genomes = out_intm + "/genomes"
 
-# Setup
+# setup directories
 genomes = glob.glob(GENOMEFILES)
 os.makedirs(out_intm)
 os.makedirs(out_results)
+os.makedirs(out_genomes)
+# turns off printing to stdout
 FNULL = open(os.devnull, 'w')
 
 # different ribosomal markers for archaea/bacteria/all
@@ -75,6 +79,32 @@ elif DOMAIN == 'all':
 print('')
 print('#############################################')
 print('metabolisHMM v' + VERSION)
+
+# if .fna predict CDS and reformat header names because prodigal makes them stupid
+# if .faa reformat the headers just in case contains weirdness
+# if the user didn't provide the right files tell them
+# for genome in genomes:
+#     if genome.endswith('.fna'):
+#         name = os.path.basename(genome).replace(".fna", "").strip().splitlines()[0])
+#         out_prot = out_genomes + name + ".faa"
+#         prodigal_cmd = "prodigal -i "+
+
+#     elif genome.endswith('.faa'):
+#         name = os.path.basename(genome).replace(".fna", "").strip().splitlines()[0])
+#         out_final = out_genomes + name + "-reformatted.faa"
+#         for seq_record in SeqIO.parse(genome, "fasta"):
+#             n = n + 1
+#             out_final.write(">" + name + "_" + str(n) + "\n")
+#             out_final.write(str(seq_record.seq) + "\n")
+#     else:
+#         print("These do not look like fasta files that end in .fna or .faa. Check your genome files!")
+        
+# for seq_record in SeqIO.parse(genome, "fasta"):
+#            n = n + 1
+#            out_fasta.write(">" + protname + "_" + str(n) + "\n")
+#            out_fasta.write(str(seq_record.seq) + "\n")
+
+
 
 # setup hmmsearch run depending on HMM list
 print("Running ribosomal protein HMM searches...")
@@ -160,12 +190,13 @@ for file in infiles:
             if line.startswith(">"):
                 id = line.strip('\n').strip('>')
                 counts[id] = counts.get(id, 0) + 1
-
-# add argument for this so the user can know if they want a different value, but set a default value
 x = int(args.loci)
+under_cutoff = OUTPUT + "/results/genomes-under-cutoff.txt"
 for (k,v) in counts.items():
     if v < x:
-        print("\t" + 'Genome '+ k + ' has fewer than ' + str(x) + ' hits!')
+        with open(under_cutoff, 'a') as uc:
+            uc.write("Genome "+ k + " has fewer than " + str(x) + ' hits!' + "\n")
+print('Find list of genomes with less than ' + str(x) + ' ribosomal markers in ' + under_cutoff)
 
 # get rid of "unknown description" descriptor in alignment file that biopython adds and I haven't figured out how to remove
 reformatout=OUTPUT + "/results/"+DOMAIN+"-concatenated-ribosomal-alignment-reformatted.fasta"
