@@ -44,7 +44,8 @@ VERSION = version()
 
 args = parser.parse_args()
 GENOMEDIR = args.input
-OUTFILE = args.output
+OUTPUT = args.output
+OUTFILE = args.summary
 out_intm = OUTPUT + "/out"
 out_results = OUTPUT + "/results"
 os.makedirs(out_intm)
@@ -54,8 +55,7 @@ genomes=glob.glob(os.path.join(GENOMEDIR, '*.faa'))
 MARKER_DIR = args.markers_dir
 MARKERS_FILE = args.markers_list
 with open(MARKERS_FILE) as f:
-    files = f.read().splitlines()
-markers=glob.glob(os.path.join(MARKERDIR, files, "*.hmm"))
+    markers = f.read().splitlines()
 FNULL = open(os.devnull, 'w')
 
 # Beginning message
@@ -68,23 +68,24 @@ print("Running HMM searches using custom marker set...")
 for genome in genomes: 
     name=os.path.basename(genome).replace(".faa", "").strip().splitlines()[0]
     dir=name
-    os.mkdir("out/"+dir)
+    os.mkdir(OUTPUT + "/out/"+dir)
     for marker in markers:
+        infile=os.path.join(MARKER_DIR,marker)
         prot=os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
-        outname= "out/"+dir+"/"+name + "-" + prot + ".out"
-        cmd = ["hmmsearch","--cut_tc","--tblout="+outname, marker, genome]
+        outname= OUTPUT + "/out/"+dir+"/"+name + "-" + prot + ".out"
+        cmd = ["hmmsearch","--cut_tc","--tblout="+outname, infile, genome]
         subprocess.call(cmd, stdout=FNULL)
 
 # Parse HMM file to results matrix/dataframe
 print("Parsing all results...")
 all_dicts={}
-result_dirs = os.walk("out/")
+result_dirs = os.walk(OUTPUT + "/out/")
 for path, dirs, files in result_dirs:
     genome_dict={}
     for file in files:
         genome = file.split("-")[0]
         prot = file.replace(".out", "").split("-")[1]
-        result = "out/"+genome+"/"+file
+        result = OUTPUT + "/out/"+genome+"/"+file
         with open(result, "rU") as input:
             for qresult in SearchIO.parse(input, "hmmer3-tab"):
                 hits = qresult.hits
@@ -92,6 +93,8 @@ for path, dirs, files in result_dirs:
                 genome_dict[prot] = num_hits
                 all_dicts[os.path.basename(file).split("-")[0]]=genome_dict
 df=pd.DataFrame.from_dict(all_dicts, orient="index", dtype=None)
+df.fillna(0, inplace=True)
+print(df)
 
 # Reformat dataframe in order of marker function, find markers in none of the genomes and input NaN for all
 all_cols=[]
@@ -105,9 +108,16 @@ for col in existing_markers:
     all_cols.append(col)
 df_all=df.reindex(columns=all_cols)
 df_all.fillna(0, inplace=True)
-df_all.to_csv(OUTFILE)
+out_table = OUTPUT + "/results/" + OUTFILE
+df_all.to_csv(out_table)
 
 print("Plotting results...")
 METADATA = args.metadata
 FIGOUT = args.heatmap
 AGG = args.aggregate
+plot_cmd = ['Rscript','make-heatmap.R', out_table, METADATA, AGG, FIGOUT]
+subprocess.call(plot_cmd, stdout=FNULL)
+
+# end message
+print("Done! Find your results in "+ OUTPUT + "/results/")
+print('#############################################')
