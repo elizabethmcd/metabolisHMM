@@ -10,6 +10,7 @@
 ###############################################################
 
 import glob, argparse, subprocess, os, sys, tempfile, re
+from subprocess import Popen, DEVNULL
 from Bio import BiopythonExperimentalWarning
 import warnings
 with warnings.catch_warnings():
@@ -43,6 +44,11 @@ def version():
     return versionFile.read()
 VERSION = version()
 
+# Beginning message
+print('')
+print('#############################################')
+print('metabolisHMM v' + VERSION)
+
 # arguments setup
 args = parser.parse_args()
 GENOMEDIR = args.input
@@ -54,6 +60,11 @@ OUTPUT = args.output
 out_intm = OUTPUT + "/out"
 out_results = OUTPUT + "/results"
 out_genomes = OUTPUT + "/genomes"
+
+# check if directory exists
+if os.path.isdir(OUTPUT) == True:
+    print("Directory "+ OUTPUT +" already exists! Please create different directory or remove the existing one.")
+    sys.exit()
 
 # setup directories
 genomes = glob.glob(GENOMEFILES)
@@ -75,10 +86,6 @@ elif DOMAIN == 'bacteria':
 elif DOMAIN == 'all': 
     prot_list=all_list
 
-# Beginning message
-print('')
-print('#############################################')
-print('metabolisHMM v' + VERSION)
 
 # if .fna predict CDS and reformat header names because prodigal makes them stupid
 # if .faa reformat the headers just in case contains weirdness
@@ -109,7 +116,8 @@ for genome in genomes:
                 outre.write(">" + name + "_" + str(a) + "\n")
                 outre.write(str(seq_record.seq) + "\n")
     else:
-        print("These do not look like fasta files that end in .fna or .faa. Please checky your genome files.")
+        print("These do not look like fasta files that end in .fna or .faa. Please check your genome files.")
+        sys.exit()
 reformatted_path = OUTPUT + "/genomes/" + "*.reformatted.faa"
 reformatted_genomes = glob.glob(reformatted_path)
 
@@ -215,8 +223,9 @@ if PHYTOOL == 'fastree':
     print("Calculating tree using FastTree...")
     fileIn=OUTPUT + "/results/"+DOMAIN+"-concatenated-ribosomal-alignment-reformatted.fasta"
     outname = OUTPUT + "/results/"+DOMAIN+"-fastTree-ribosomal-tree.tre"
-    fastCmd = "FastTree -quiet -nopr "+fileIn+" > "+outname
-    os.system(fastCmd)
+    logfile = OUTPUT + "/results/"+marker_name+".fastree.logfile"
+    fastCmd = ["FastTree","-quiet","-log",logfile,"-out",outname,fileIn]
+    subprocess.Popen(fastCmd, stdout=DEVNULL, stderr=DEVNULL)
 elif PHYTOOL == "raxml":
     print("Calculating tree with RaxML... be patient...")
     outname= DOMAIN+"-raxml-ribo"

@@ -9,6 +9,7 @@
 ###############################################################
 
 import os, sys, glob, subprocess, argparse
+from subprocess import Popen, DEVNULL
 from Bio import BiopythonExperimentalWarning
 import warnings
 with warnings.catch_warnings():
@@ -38,19 +39,34 @@ def version():
     return versionFile.read()
 VERSION = version()
 
+# Beginning message
+print('')
+print('#############################################')
+print('metabolisHMM v' + VERSION)
+
 args = parser.parse_args()
 GENOMEDIR = args.input
+GENOMEFILES = GENOMEDIR + "/**"
 OUTPUT = args.output
 out_intm = OUTPUT + "/out"
 out_results = OUTPUT + "/results"
+out_genomes = OUTPUT + "/genomes"
 MARKER = args.marker
 PHYTOOL = args.phylogeny
 THREADS = args.threads
 
+# check if directory exists
+if os.path.isdir(OUTPUT) == True:
+    print("Directory "+ OUTPUT +" already exists! Please create different directory or remove the existing one.")
+    sys.exit()
+
+# make directories
 os.makedirs(out_intm)
 os.makedirs(out_results)
-genomes=glob.glob(os.path.join(GENOMEDIR, '*.faa'))
+os.makedirs(out_genomes)
+genomes=glob.glob(GENOMEFILES)
 marker=MARKER
+# turns off printing to stdout
 FNULL = open(os.devnull, 'w')
 prot=os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
 dir=prot
@@ -61,15 +77,46 @@ OUT_LIST_PATH = OUTPUT + "/results/" + args.list
 OUT_LIST = open(OUT_LIST_PATH, "w")
 OUT_LIST.write ("genome\tlocus_tag\n")
 
-# Beginning message
-print('')
-print('#############################################')
-print('metabolisHMM v' + VERSION)
+
+# if .fna predict CDS and reformat header names because prodigal makes them stupid
+# if .faa reformat the headers just in case contains weirdness
+# if the user didn't provide the right files tell them
+n = 0
+print("Reformatting fasta files...")
+for genome in genomes:
+    if genome.endswith('.fna'):
+        name = os.path.basename(genome).replace(".fna", "").strip().splitlines()[0]
+        out_prot = OUTPUT + "/genomes/" + name + ".faa"
+        out_gbk = OUTPUT + "/genomes/" + name + ".gbk"
+        out_reformatted = OUTPUT + "/genomes/" + name + ".reformatted.faa"
+        prodigal_cmd = "prodigal -q -i "+genome+" -a "+out_prot +" -o "+out_gbk
+        os.system(prodigal_cmd)
+        for seq_record in SeqIO.parse(out_prot, "fasta"):
+            n = n + 1
+            a = str(n).zfill(5)
+            with open(out_reformatted, "a") as outre:
+                outre.write(">" + name + "_" + str(a) + "\n")
+                outre.write(str(seq_record.seq) + "\n")
+    elif genome.endswith('.faa'):
+        name = os.path.basename(genome).replace(".faa", "").strip().splitlines()[0]
+        out_reformatted = OUTPUT + "/genomes/" + name + ".reformatted.faa"
+        for seq_record in SeqIO.parse(genome, "fasta"):
+            n = n + 1
+            a = str(n).zfill(5)
+            with open(out_reformatted, "a") as outre:
+                outre.write(">" + name + "_" + str(a) + "\n")
+                outre.write(str(seq_record.seq) + "\n")
+    else:
+        print("These do not look like fasta files that end in .fna or .faa. Please check your genome files.")
+        sys.exit()
+reformatted_path = OUTPUT + "/genomes/" + "*.reformatted.faa"
+reformatted_genomes = glob.glob(reformatted_path)
+
 
 # Run HMM for a single marker
 print("Searching for " + prot + " marker in genome set...")
-for genome in genomes: 
-    name=os.path.basename(genome).replace(".faa", "").strip().splitlines()[0]
+for genome in reformatted_genomes: 
+    name=os.path.basename(genome).replace(".reformatted.faa", "").strip().splitlines()[0]
     outname= OUTPUT + "/out/"+dir+"/"+name + ".out"
     cmd = ["hmmsearch","--cut_tc","--tblout="+outname, marker, genome]
     subprocess.call(cmd, stdout=FNULL)
@@ -82,7 +129,7 @@ for path, dirs, files in result_dir:
         genome = file.replace(".out", "").strip().splitlines()[0]
         result = OUTPUT + "/out/"+dir+"/"+file
         output= OUTPUT + "/results/"+dir+".faa"
-        genome_file=GENOMEDIR+genome+".faa"
+        genome_file=OUTPUT+"/genomes/"+genome+".reformatted.faa"
         with open(output, "a") as outf:
             with open(genome_file, "r") as input_fasta:
                 with open(result, "r") as input:
@@ -113,10 +160,11 @@ for fasta in fastas:
 if PHYTOOL == 'fastree':
     print("Calculating tree using FastTree...")
     marker_name = os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
+    logfile = OUTPUT + "/results/"+marker_name+".fastree.logfile"
     alignment_file = OUTPUT + "/results/"+marker_name+".aln"
     output_tree= OUTPUT + "/results/"+marker_name+".tre"
-    tree_cmd = ["FastTree","-quiet","-out",output_tree,alignment_file]
-    subprocess.call(tree_cmd)
+    tree_cmd = ["FastTree","-quiet","-log",logfile,"-out",output_tree,alignment_file]
+    subprocess.Popen(tree_cmd, stdout=DEVNULL, stderr=DEVNULL)
 elif PHYTOOL == "raxml":
     print("Calculating tree with RaxML... be patient...")
     marker_name = os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
