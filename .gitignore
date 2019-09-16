@@ -1,6 +1,6 @@
 data/*.csv
 TEST*
-test*
+*test*
 in/
 other_markers/
 results/

@@ -46,14 +46,14 @@ VERSION = version()
 # arguments setup
 args = parser.parse_args()
 GENOMEDIR = args.input
-GENOMEFILES = args.input + "*.faa"
+GENOMEFILES = GENOMEDIR + "/**"
 DOMAIN = args.domain
 PHYTOOL = args.phylogeny
 THREADS = args.threads
 OUTPUT = args.output
 out_intm = OUTPUT + "/out"
 out_results = OUTPUT + "/results"
-out_genomes = out_intm + "/genomes"
+out_genomes = OUTPUT + "/genomes"
 
 # setup directories
 genomes = glob.glob(GENOMEFILES)
@@ -83,33 +83,40 @@ print('metabolisHMM v' + VERSION)
 # if .fna predict CDS and reformat header names because prodigal makes them stupid
 # if .faa reformat the headers just in case contains weirdness
 # if the user didn't provide the right files tell them
-# for genome in genomes:
-#     if genome.endswith('.fna'):
-#         name = os.path.basename(genome).replace(".fna", "").strip().splitlines()[0])
-#         out_prot = out_genomes + name + ".faa"
-#         prodigal_cmd = "prodigal -i "+
-
-#     elif genome.endswith('.faa'):
-#         name = os.path.basename(genome).replace(".fna", "").strip().splitlines()[0])
-#         out_final = out_genomes + name + "-reformatted.faa"
-#         for seq_record in SeqIO.parse(genome, "fasta"):
-#             n = n + 1
-#             out_final.write(">" + name + "_" + str(n) + "\n")
-#             out_final.write(str(seq_record.seq) + "\n")
-#     else:
-#         print("These do not look like fasta files that end in .fna or .faa. Check your genome files!")
-        
-# for seq_record in SeqIO.parse(genome, "fasta"):
-#            n = n + 1
-#            out_fasta.write(">" + protname + "_" + str(n) + "\n")
-#            out_fasta.write(str(seq_record.seq) + "\n")
-
-
+n = 0
+print("Reformatting fasta files...")
+for genome in genomes:
+    if genome.endswith('.fna'):
+        name = os.path.basename(genome).replace(".fna", "").strip().splitlines()[0]
+        out_prot = OUTPUT + "/genomes/" + name + ".faa"
+        out_gbk = OUTPUT + "/genomes/" + name + ".gbk"
+        out_reformatted = OUTPUT + "/genomes/" + name + ".reformatted.faa"
+        prodigal_cmd = "prodigal -q -i "+genome+" -a "+out_prot +" -o "+out_gbk
+        os.system(prodigal_cmd)
+        for seq_record in SeqIO.parse(out_prot, "fasta"):
+            n = n + 1
+            a = str(n).zfill(5)
+            with open(out_reformatted, "a") as outre:
+                outre.write(">" + name + "_" + str(a) + "\n")
+                outre.write(str(seq_record.seq) + "\n")
+    elif genome.endswith('.faa'):
+        name = os.path.basename(genome).replace(".faa", "").strip().splitlines()[0]
+        out_reformatted = OUTPUT + "/genomes/" + name + ".reformatted.faa"
+        for seq_record in SeqIO.parse(genome, "fasta"):
+            n = n + 1
+            a = str(n).zfill(5)
+            with open(out_reformatted, "a") as outre:
+                outre.write(">" + name + "_" + str(a) + "\n")
+                outre.write(str(seq_record.seq) + "\n")
+    else:
+        print("These do not look like fasta files that end in .fna or .faa. Please checky your genome files.")
+reformatted_path = OUTPUT + "/genomes/" + "*.reformatted.faa"
+reformatted_genomes = glob.glob(reformatted_path)
 
 # setup hmmsearch run depending on HMM list
 print("Running ribosomal protein HMM searches...")
-for genome in genomes:
-    name=os.path.basename(genome).replace(".faa", "").strip().splitlines()[0]
+for genome in reformatted_genomes:
+    name=os.path.basename(genome).replace(".reformatted.faa", "").strip().splitlines()[0]
     dir=name
     os.makedirs(OUTPUT+"/out/"+dir)
     for prot in prot_list:
@@ -134,7 +141,7 @@ for prot in prot_list:
             marker=file.replace(".out", "").split("-")[1]
             result=OUTPUT + "/out/"+genome+"/"+file
             outfasta=OUTPUT + "/results/"+marker+".faa"
-            genome_file = GENOMEDIR+genome+".faa"
+            genome_file = OUTPUT + "/genomes/"+genome+".reformatted.faa"
             with open(outfasta, "a") as outf:
                 with open(genome_file, "r") as input_fasta:
                     with open(result, "r") as input:
