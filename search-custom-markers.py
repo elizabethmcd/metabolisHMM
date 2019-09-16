@@ -42,15 +42,32 @@ def version():
     return versionFile.read()
 VERSION = version()
 
+# Beginning message
+print('')
+print('#############################################')
+print('metabolisHMM v' + VERSION)
+
+# arguments setup
 args = parser.parse_args()
 GENOMEDIR = args.input
+GENOMEFILES = GENOMEDIR + "/**"
 OUTPUT = args.output
 OUTFILE = args.summary
 out_intm = OUTPUT + "/out"
 out_results = OUTPUT + "/results"
+out_genomes = OUTPUT + "/genomes"
+
+# check if directory exists
+if os.path.isdir(OUTPUT) == True:
+    print("Directory "+ OUTPUT +" already exists! Please create different directory or remove the existing one.")
+    sys.exit()
+
+# setup directories
 os.makedirs(out_intm)
 os.makedirs(out_results)
-genomes=glob.glob(os.path.join(GENOMEDIR, '*.faa'))
+os.makedirs(out_genomes)
+genomes = glob.glob(GENOMEFILES)
+
 # point to directory where markers are, and only run on specific markers (in case want run on a select subset in a larger directory, such as the KofamKOALA database)
 MARKER_DIR = args.markers_dir
 MARKERS_FILE = args.markers_list
@@ -58,15 +75,44 @@ with open(MARKERS_FILE) as f:
     markers = f.read().splitlines()
 FNULL = open(os.devnull, 'w')
 
-# Beginning message
-print('')
-print('#############################################')
-print('metabolisHMM v' + VERSION)
+# if .fna predict CDS and reformat header names because prodigal makes them stupid
+# if .faa reformat the headers just in case contains weirdness
+# if the user didn't provide the right files tell them
+n = 0
+print("Reformatting fasta files...")
+for genome in genomes:
+    if genome.endswith('.fna'):
+        name = os.path.basename(genome).replace(".fna", "").strip().splitlines()[0]
+        out_prot = OUTPUT + "/genomes/" + name + ".faa"
+        out_gbk = OUTPUT + "/genomes/" + name + ".gbk"
+        out_reformatted = OUTPUT + "/genomes/" + name + ".reformatted.faa"
+        prodigal_cmd = "prodigal -q -i "+genome+" -a "+out_prot +" -o "+out_gbk
+        os.system(prodigal_cmd)
+        for seq_record in SeqIO.parse(out_prot, "fasta"):
+            n = n + 1
+            a = str(n).zfill(5)
+            with open(out_reformatted, "a") as outre:
+                outre.write(">" + name + "_" + str(a) + "\n")
+                outre.write(str(seq_record.seq) + "\n")
+    elif genome.endswith('.faa'):
+        name = os.path.basename(genome).replace(".faa", "").strip().splitlines()[0]
+        out_reformatted = OUTPUT + "/genomes/" + name + ".reformatted.faa"
+        for seq_record in SeqIO.parse(genome, "fasta"):
+            n = n + 1
+            a = str(n).zfill(5)
+            with open(out_reformatted, "a") as outre:
+                outre.write(">" + name + "_" + str(a) + "\n")
+                outre.write(str(seq_record.seq) + "\n")
+    else:
+        print("These do not look like fasta files that end in .fna or .faa. Please check your genome files.")
+        sys.exit()
+reformatted_path = OUTPUT + "/genomes/" + "*.reformatted.faa"
+reformatted_genomes = glob.glob(reformatted_path)
 
 # Run HMMs
 print("Running HMM searches using custom marker set...")
-for genome in genomes: 
-    name=os.path.basename(genome).replace(".faa", "").strip().splitlines()[0]
+for genome in reformatted_genomes: 
+    name=os.path.basename(genome).replace(".reformatted.faa", "").strip().splitlines()[0]
     dir=name
     os.mkdir(OUTPUT + "/out/"+dir)
     for marker in markers:
