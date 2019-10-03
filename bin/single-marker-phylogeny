@@ -34,10 +34,7 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 # version to print
-def version():
-    versionFile = open('VERSION')
-    return versionFile.read()
-VERSION = version()
+VERSION = '2.0'
 
 # Beginning message
 print('')

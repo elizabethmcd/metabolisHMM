@@ -1,3 +1,7 @@
+*.pyc
+dist/
+metabolisHMM.egg-info/
+metabolisHMM_v1.1_markers/
 WLJ/
 data/*.csv
 TEST*
