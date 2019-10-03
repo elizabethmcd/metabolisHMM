@@ -1,3 +1,5 @@
+metabolic_markers/
+ribosomal_markers/
 *.pyc
 dist/
 metabolisHMM.egg-info/
