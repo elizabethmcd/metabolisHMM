@@ -65,6 +65,7 @@ genomes=glob.glob(GENOMEFILES)
 marker=MARKER
 # turns off printing to stdout
 FNULL = open(os.devnull, 'w')
+DEVNULL = open(os.devnull, 'wb')
 prot=os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
 dir=prot
 os.makedirs(OUTPUT + "/out/"+dir)
@@ -91,9 +92,11 @@ for genome in genomes:
         for seq_record in SeqIO.parse(out_prot, "fasta"):
             n = n + 1
             a = str(n).zfill(5)
+            seq = str(seq_record.seq)
+            filseq = seq.replace("*","")
             with open(out_reformatted, "a") as outre:
                 outre.write(">" + name + "_" + str(a) + "\n")
-                outre.write(str(seq_record.seq) + "\n")
+                outre.write(str(seq_record.seq).replace("*","") + "\n")
     elif genome.endswith('.faa'):
         name = os.path.basename(genome).replace(".faa", "").strip().splitlines()[0]
         out_reformatted = OUTPUT + "/genomes/" + name + ".reformatted.faa"
