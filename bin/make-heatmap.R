@@ -17,6 +17,7 @@ markers.file.path <- userprefs[1]
 metadata.file.path <- userprefs[2]
 aggregate.option <- userprefs[3]
 heatmap.file.path <- userprefs[4]
+heatmap.option <- userprefs[5]
 
 import.markers <- function(File){
   markers.file.path <- File
@@ -59,15 +60,22 @@ merge.markers.metadata <- function(markers, metadata, aggregate.option, outdir){
   }
 }
 
-make.heatmap <- function(stats_table, file.path, directory){
-  heatmap.file.path <- file.path
-  figureOut <- file.path(directory,heatmap.file.path)
-  table_melted <- melt(stats_table, id.vars="group")
-  table_melted <- table_melted %>% mutate(group = factor(group), 
-                                          group = factor(group, levels = rev(levels(group))))
-  plot <- table_melted %>% ggplot(aes(x=variable, y=(group), fill=value)) + geom_tile(color='black') + scale_fill_viridis_c(alpha=1,begin=0,end=1,direction=-1) + theme_bw() + theme(panel.grid = element_blank(), panel.border = element_blank())
-  plot_formatted <- plot + theme(axis.text.x= element_text(angle=85, hjust=1)) + guides(fill = guide_colorbar(nbin = 10)) + scale_y_discrete(expand=c(0,0))
-  ggsave(file=figureOut, plot_formatted, height=15, width=55, units=c("cm"))
+make.heatmap <- function(stats_table, file.path, heatmap.option, directory){
+  if(heatmap.option == 'CUSTOM'){
+    heatmap.file.path <- file.path
+    figureOut <- file.path(directory,heatmap.file.path)
+    table_melted <- melt(stats_table, id.vars="group")
+    table_melted <- table_melted %>% mutate(group = factor(group),group = factor(group, levels = rev(levels(group))))
+    plot <- table_melted %>% ggplot(aes(x=variable, y=(group), fill=value)) + geom_tile(color='black') + scale_fill_viridis_c(alpha=1,begin=0,end=1,direction=-1) + theme_bw() + theme(panel.grid = element_blank(), panel.border = element_blank())
+    plot_formatted <- plot + theme(axis.text.x= element_text(angle=85, hjust=1)) + guides(fill = guide_colorbar(nbin = 10)) + scale_y_discrete(expand=c(0,0))
+    ggsave(file=figureOut, plot_formatted, height=15, width=55, units=c("cm"))
+  }
+  if(heatmap.option == 'CURATED'){
+    heatmap.file.path <- file.path
+    figureOut <- file.path(directory,heatmap.file.path)
+    table_melted <- melt(stats_table, id.vars="group")
+    
+  }
 }
 
 # call functions
@@ -75,4 +83,3 @@ markers <- import.markers(File = markers.file.path)
 metadata <- import.metadata(File = metadata.file.path)
 out <- get.output.directory(file.path=markers.file.path)
 result <- merge.markers.metadata(markers, metadata, aggregate.option, outdir=out)
-make.heatmap(stats_table = result, file.path = heatmap.file.path, directory = out)
