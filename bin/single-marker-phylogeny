@@ -9,6 +9,7 @@
 ###############################################################
 
 import os, sys, glob, subprocess, argparse
+import pandas as pd
 from subprocess import Popen, DEVNULL
 from Bio import BiopythonExperimentalWarning
 from collections import defaultdict, Counter
@@ -25,6 +26,7 @@ parser = argparse.ArgumentParser(description = "Create phylogeny of single marke
 parser._action_groups.pop()
 required = parser.add_argument_group("required arguments")
 optional = parser.add_argument_group("optional arguments")
+ribosomal = parser.add_argument_group("corresponding ribosomal tree arguments")
 required.add_argument('--input', metavar='INPUT', help='Directory where genomes to be screened are held')
 required.add_argument('--output', metavar='OUTPUT', help='Directory to store results and intermediate files')
 required.add_argument('--marker', metavar='MARKER', help="Location of single marker to run analysis on")
@@ -33,9 +35,9 @@ required.add_argument('--phylogeny', metavar='PHY', help="fastree or raxml, choo
 optional.add_argument("--threads",metavar='THREADS',help="number of threads for tree making")
 optional.add_argument("--kofam", metavar='KOFAM', help="Use KEGG HMMs from the KofamKOALA set. Options = ON or OFF")
 optional.add_argument("--ko_list", metavar='KOLIST', help="Point to location of the KofamKoala ko_list file if using the KofamKOALA KEGG HMMs")
-optional.add_argument("--ribo_tree", metavar='RIBO', default='OFF', help="Make corresponding ribosomal phylogeny of genomes containing hits of the provided single marker. " )
-optional.add_argument("--domain", metavar='DOMAIN', help="If constructing corresponding ribosomal tree, select the domain for which your hits belong to. Options: bacteria, archaea, all")
-optional.add_argument('--loci', metavar='LOCI', default='12', help='Output genomes with less than x number of loci. By default prints genomes that have less than 12 ribosomal loci markers.')
+ribosomal.add_argument("--ribo_tree", metavar='RIBO', default='OFF', help="Make corresponding ribosomal phylogeny of genomes containing hits of the provided single marker. " )
+ribosomal.add_argument("--domain", metavar='DOMAIN', help="If constructing corresponding ribosomal tree, select the domain for which your hits belong to. Options: bacteria, archaea, all")
+ribosomal.add_argument('--loci', metavar='LOCI', default='12', help='Output genomes with less than x number of loci. By default prints genomes that have less than 12 ribosomal loci markers.')
 
 # if no arguments given, print help message
 if len(sys.argv) < 2:
@@ -62,6 +64,8 @@ PHYTOOL = args.phylogeny
 THREADS = args.threads
 RIBO = args.ribo_tree
 DOMAIN = args.domain
+KOFAM = args.kofam
+KO_LIST = args.ko_list
 
 # check if directory exists
 if os.path.isdir(OUTPUT) == True:
@@ -69,9 +73,23 @@ if os.path.isdir(OUTPUT) == True:
     sys.exit()
 
 # if ribosomal option on, check that ribosomal markers directory exists
-if os.path.isdir("ribosomal_markers/") == False:
-    print("     The ribosomal markers directory could not be found."+"\n"+"     Please either download the markers from https://github.com/elizabethmcd/metabolisHMM/releases/download/v2.0/metabolisHMM_v2.0_markers.tgz and decompress the tarball, or move the directory to where you are running the workflow from.")
-    sys.exit()
+if RIBO == True:
+    if os.path.isdir("ribosomal_markers/") == False:
+        print("     The ribosomal markers directory could not be found."+"\n"+"     Please either download the markers from https://github.com/elizabethmcd/metabolisHMM/releases/download/v2.0/metabolisHMM_v2.0_markers.tgz and decompress the tarball, or move the directory to where you are running the workflow from.")
+        sys.exit()
+
+# if kofam argument turned on, check if the corresponding ko_list metadata is provided for getting TC scores from
+if KOFAM == 'ON':
+    if os.path.exists("ko_list") == False:
+        print("     You have opted to use a marker from the KofamKOALA distribution, but have not supplied the path to the ko_list.")
+        sys.exit()
+# check contents of ko_list to make sure it's the correct file
+with open(KO_LIST) as ko:
+    first_line = ko.readlines()[0]
+    elem = 'knum'
+    if elem not in first_line:
+        print("     This does not look like the ko_list file from the KofamKOALA distribution.")
+        sys.exit()
 
 # make directories
 os.makedirs(out_intm)
@@ -132,8 +150,17 @@ print("Searching for " + prot + " marker in genome set...")
 for genome in reformatted_genomes: 
     name=os.path.basename(genome).replace(".reformatted.faa", "").strip().splitlines()[0]
     outname= OUTPUT + "/out/"+dir+"/"+name + ".out"
-    cmd = ["hmmsearch","--cut_tc","--tblout="+outname, marker, genome]
-    subprocess.call(cmd, stdout=FNULL)
+    if KOFAM == 'ON':
+        kofam_name = os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
+        scores = pd.read_csv(KO_LIST, delimiter="\t")
+        scoredic = scores.set_index('knum')['threshold'].to_dict()
+        tc = scoredic.get(kofam_name)
+        cmd = ["hmmsearch","-T"+tc,"--tblout="+outname,marker,genome]
+        print(cmd)
+        subprocess.call(cmd, stdout=FNULL)
+    else:
+        cmd = ["hmmsearch","--cut_tc","--tblout="+outname, marker, genome]
+        subprocess.call(cmd, stdout=FNULL)
 
 # Parse HMM file 
 print("Parsing all results...")
@@ -292,7 +319,7 @@ if RIBO == 'ON':
         os.system(raxCmd)
     print("Done! Find your results in "+ OUTPUT + "/results/")
     print('#############################################')
-else:
+else: # end message
     print("Done! Find your results in "+ OUTPUT + "/results/")
     print('#############################################')
-# end message
+
