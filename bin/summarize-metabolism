@@ -58,6 +58,11 @@ if os.path.isdir(OUTPUT) == True:
     print("Directory "+ OUTPUT +" already exists! Please create different directory or remove the existing one.")
     sys.exit()
 
+# check for curated metabolic markers direcotry
+if os.path.isdir("metabolic_markers/") == False:
+    print("     The directory of curated metabolic markers could not be found."+"\n"+"     Please either download the markers from https://github.com/elizabethmcd/metabolisHMM/releases/download/v2.0/metabolisHMM_v2.0_markers.tgz and decompress the tarball, or move the directory to where you are running the workflow from.")
+    sys.exit()
+
 # make directories
 os.makedirs(out_intm)
 os.makedirs(out_results)

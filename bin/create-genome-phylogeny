@@ -63,6 +63,11 @@ if os.path.isdir(OUTPUT) == True:
     print("Directory "+ OUTPUT +" already exists! Please create different directory or remove the existing one.")
     sys.exit()
 
+# check for ribosomal markers directory
+if os.path.isdir("ribosomal_markers/") == False:
+    print("     The ribosomal markers directory could not be found."+"\n"+"     Please either download the markers from https://github.com/elizabethmcd/metabolisHMM/releases/download/v2.0/metabolisHMM_v2.0_markers.tgz and decompress the tarball, or move the directory to where you are running the workflow from.")
+    sys.exit()
+
 # setup directories
 genomes = glob.glob(GENOMEFILES)
 os.makedirs(out_intm)
@@ -112,7 +117,7 @@ for genome in genomes:
             a = str(n).zfill(5)
             with open(out_reformatted, "a") as outre:
                 outre.write(">" + name + "_" + str(a) + "\n")
-                outre.write(str(seq_record.seq) + "\n")
+                outre.write(str(seq_record.seq).replace("*","") + "\n")
     else:
         print("These do not look like fasta files that end in .fna or .faa. Please check your genome files.")
         sys.exit()
