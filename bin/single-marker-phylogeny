@@ -27,6 +27,8 @@ required.add_argument('--marker', metavar='MARKER', help="Location of single mar
 optional.add_argument('--list', default='hit_list.txt', help="Output list of hits locus tags")
 required.add_argument('--phylogeny', metavar='PHY', help="fastree or raxml, choose one")
 optional.add_argument("--threads",metavar='THREADS',help="number of threads for tree making")
+optional.add_argument("--kofam", metavar='KOFAM', help="Use KEGG HMMs from the KofamKOALA set. Options = ON or OFF")
+optional.add_argument("--ko_list", metavar='KOLIST', help="Point to location of the KofamKoala ko_list file if using the KofamKOALA KEGG HMMs")
 
 # if no arguments given, print help message
 if len(sys.argv) < 2:
