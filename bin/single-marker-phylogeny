@@ -83,6 +83,17 @@ if KOFAM == 'ON':
     if os.path.exists("ko_list") == False:
         print("     You have opted to use a marker from the KofamKOALA distribution, but have not supplied the path to the ko_list.")
         sys.exit()
+elif KOFAM == 'OFF':
+    if os.path.exists(MARKER) == False: 
+        print("     You have not provided an HMM marker to search with.")
+        sys.exit()
+    if os.path.exists(MARKER) == True: 
+        hmmfile = open(MARKER, 'r')
+        hmmlist = hmmfile.readlines()
+        hmmfile.close()
+        for line in hmmlist:
+            if str(TC) in line:
+            
 # check contents of ko_list to make sure it's the correct file
 with open(KO_LIST) as ko:
     first_line = ko.readlines()[0]
