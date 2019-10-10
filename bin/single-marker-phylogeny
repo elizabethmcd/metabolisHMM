@@ -273,7 +273,8 @@ if RIBO == 'ON':
         os.system(mafft_cmd)
     prot_alignments = OUTPUT + "/ribo_out/*.aln"
     infiles = glob.glob(prot_alignments)
-    concatout = OUTPUT + "/ribo_out/"+DOMAIN+"-"+marker+"-concatenated-ribosomal-alignment.fasta"
+    target = args.marker
+    concatout = OUTPUT + "/ribo_out/"+DOMAIN+"-"+target+"-concatenated-ribosomal-alignment.fasta"
     alignments = [AlignIO.read(open(f, "r"), "fasta") for f in infiles]
     all_labels = set(seq.id for aln in alignments for seq in aln)
     tmp = defaultdict(list)
@@ -303,12 +304,12 @@ if RIBO == 'ON':
             with open(under_cutoff, 'a') as uc:
                 uc.write("Genome "+ k + " has fewer than " + str(x) + ' hits!' + "\n")
     print('Find list of genomes with less than ' + str(x) + ' ribosomal markers in ' + under_cutoff)
-    reformatout=OUTPUT + "/ribo_out/"+DOMAIN+"-"+marker+"-concatenated-ribosomal-alignment-reformatted.fasta"
+    reformatout=OUTPUT + "/ribo_out/"+DOMAIN+"-"+target+"-concatenated-ribosomal-alignment-reformatted.fasta"
     filter_cmd = "sed 's/<unknown description>//g' "+concatout+" > "+reformatout
     os.system(filter_cmd)
     if PHYTOOL == 'fastree':
         fileIn=reformatout
-        outname = OUTPUT + "/results/"+DOMAIN+"-"+marker+"-fastTree-corresponding-ribosomal-tree.tre"
+        outname = OUTPUT + "/results/"+DOMAIN+"-"+target+"-fastTree-corresponding-ribosomal-tree.tre"
         logfile = OUTPUT + "/ribo_out/"+"ribosomal-tree"+".fastree.logfile"
         fastCmd = ["FastTree","-quiet","-log",logfile,"-out",outname,fileIn]
         subprocess.Popen(fastCmd, stdout=DEVNULL, stderr=DEVNULL)
