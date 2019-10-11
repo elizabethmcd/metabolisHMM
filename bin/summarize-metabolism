@@ -240,6 +240,8 @@ print("Plotting results...")
 METADATA = args.metadata
 FIGOUT = args.heatmap
 AGG = args.aggregate
+plot_cmd = ['make-heatmap.R', out_table, METADATA, AGG, FIGOUT, CURATED]
+subprocess.call(plot_cmd, stdout=FNULL)
 
 # end message
 print("Done! Find your results in "+ OUTPUT + "/results/")
