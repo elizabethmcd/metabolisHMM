@@ -76,7 +76,7 @@ make.heatmap <- function(stats_table, file.path, heatmap.option, directory){
     heatmap.file.path <- file.path
     figureOut <- file.path(directory,heatmap.file.path)
     carbon = cbind(stats_table$group, presence_absence[,c(1:26)])
-    colnames(carbon) <- c("group", "methanol dehydrogenase", "madA", "madB", "fdh", "sfh", "sgdh", "smdh", "fae", "fmtF", "mtmc", "fdhA", "fdhB", "fdhC", "coxL", "coxM", "coxS", "rubisco I", "rubisco II", "rubisco III", "rubisco II/III", "rubisco IV", "codhC", "codhD", "codh catalytic", "aclA", "aclB")
+    colnames(carbon) <- c("group", "MtOH dehy", "madA", "madB", "fdh", "sfh", "sgdh", "smdh", "fae", "fmtF", "mtmc", "fdhA", "fdhB", "fdhC", "coxL", "coxM", "coxS", "rubisco I", "rubisco II", "rubisco III", "rubisco II/III", "rubisco IV", "codhC", "codhD", "codh catalytic", "aclA", "aclB")
     nitrogen = cbind(stats_table$group, presence_absence[,c(27:47)])
     colnames(nitrogen) <- c("group", "nifA", "nifB", "nifH", "nxrA", "nxrB", "napA", "napB", "narG", "narH", "nrfA", "nrfH", "nirB", "nirD", "nirK", "nirS", "norB", "norC", "nosD", "nosZ", "hzoA", "hzsA")
     sulfur = cbind(stats_table$group, presence_absence[,c(48:59)])
@@ -84,7 +84,7 @@ make.heatmap <- function(stats_table, file.path, heatmap.option, directory){
     oxygen = cbind(stats_table$group, presence_absence[,c(60:70)])
     colnames(oxygen) <- c("group", "coxA", "coxB", "ccoN", "ccoO", "ccoP", "cyoA", "cyoD", "cyoE", "cydA", "cydB", "qoxA")
     hydrogen = cbind(stats_table$group, presence_absence[,c(71:80)])
-    colnames(hydrogen) <- c("group", "FeFeHydrogenase I", "FeFeHydrogenase II", "Hydrogenase Group I", "Hydrogenase Group IIA", "Hydrogenase Group IIB", "Hydrogenase Group IIIA", "Hydrogenase Group IIIB", "Hydrogenase Group IIIC", "Hydrogenase Group IIID", "Hydrogenase Group IV")
+    colnames(hydrogen) <- c("group", "FeFe I", "FeFe II", "Group I", "Group IIA", "Group IIB", "Group IIIA", "Group IIIB", "Group IIIC", "Group IIID", "Group IV")
     # individual melted dfs and plots
     # carbon
     carbon_melted <- melt(carbon, id.vars="group") %>% mutate(group=factor(group), group = factor(group, levels = rev(levels(group))))
