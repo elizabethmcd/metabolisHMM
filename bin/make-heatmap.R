@@ -83,7 +83,27 @@ make.heatmap <- function(stats_table, file.path, heatmap.option, directory){
     colnames(oxygen) <- c("group", "coxA", "coxB", "ccoN", "ccoO", "ccoP", "cyoA", "cyoD", "cyoE", "cydA", "cydB", "qoxA")
     hydrogen = cbind(stats_table$group, presence_absence[,c(71:80)])
     colnames(hydrogen) <- c("group", "FeFeHydrogenase I", "FeFeHydrogenase II", "Hydrogenase Group I", "Hydrogenase Group IIA", "Hydrogenase Group IIB", "Hydrogenase Group IIIA", "Hydrogenase Group IIIB", "Hydrogenase Group IIIC", "Hydrogenase Group IIID", "Hydrogenase Group IV")
-    
+    # individual melted dfs and plots
+    # carbon
+    carbon_melted <- melt(carbon, id.vars="group") %>% mutate(group=factor(group), group = factor(group, levels = rev(levels(group))))
+    carbon_plot <- carbon_melted %>% ggplot(aes(x=variable, y=(group), fill=value)) + geom_tile(color='black') + scale_fill_gradient(low="gray92", high="brown4") + theme(panel.grid = element_blank(), panel.border = element_blank())
+    carbon_plot_formatted <- carbon_plot + scale_x_discrete(position="top", expand=c(0,0)) + theme(axis.text.x.top=element_text(angle=85, hjust=0, face="italic"), axis.ticks.x=element_blank(), axis.ticks.y=element_blank()) + labs(x="Carbon", y=NULL) +  scale_y_discrete(expand=c(0,0))
+    # nitrogen
+    nitrogen_melted <- melt(nitrogen, id.vars="group") %>% mutate(group=factor(group), group = factor(group, levels = rev(levels(group)))) 
+    nitrogen_plot <- nitrogen_melted %>% ggplot(aes(x=variable, y=(group), fill=value)) + geom_tile(color='black') + scale_fill_gradient(low="gray92", high="dodgerblue4") + theme(panel.grid = element_blank(), panel.border = element_blank())
+    nitrogen_plot_formatted <- nitrogen_plot + scale_x_discrete(position="top", expand=c(0,0)) + theme(axis.text.x.top=element_text(angle=85, hjust=0, face="italic"), axis.ticks.x=element_blank(), axis.ticks.y=element_blank()) + labs(x="Nitrogen", y=NULL) +  scale_y_discrete(expand=c(0,0))
+    # sulfur
+    sulfur_melted <- melt(sulfur, id.vars="group") %>% mutate(group=factor(group), group = factor(group, levels = rev(levels(group)))) 
+    sulfur_plot <- sulfur_melted %>% ggplot(aes(x=variable, y=(group), fill=value)) + geom_tile(color='black') + scale_fill_gradient(low="gray92", high="darkorchid4") + theme(panel.grid = element_blank(), panel.border = element_blank())
+    sulfur_plot_formatted <- sulfur_plot + scale_x_discrete(position="top", expand=c(0,0)) + theme(axis.text.x.top=element_text(angle=85, hjust=0, face="italic"), axis.ticks.x=element_blank(), axis.ticks.y=element_blank()) + labs(x="Sulfur", y=NULL) +  scale_y_discrete(expand=c(0,0))
+    # oxygen
+    oxygen_melted <- melt(oxygen, id.vars="group") %>% mutate(group=factor(group), group = factor(group, levels = rev(levels(group)))) 
+    oxygen_plot <- oxygen_melted %>% ggplot(aes(x=variable, y=(group), fill=value)) + geom_tile(color='black') + scale_fill_gradient(low="gray92", high="turquoise4") + theme(panel.grid = element_blank(), panel.border = element_blank())
+    oxygen_plot_formatted <- oxygen_plot + scale_x_discrete(position="top", expand=c(0,0)) + theme(axis.text.x.top=element_text(angle=85, hjust=0, face="italic"), axis.ticks.x=element_blank(), axis.ticks.y=element_blank()) + labs(x="Oxygen", y=NULL) +  scale_y_discrete(expand=c(0,0))
+    # hydrogen
+    hydrogen_melted <- melt(hydrogen, id.vars="group") %>% mutate(group=factor(group), group = factor(group, levels = rev(levels(group)))) 
+    hydrogen_plot <- hydrogen_melted %>% ggplot(aes(x=variable, y=(group), fill=value)) + geom_tile(color='black') + scale_fill_gradient(low="gray92", high="darkorange3") + theme(panel.grid = element_blank(), panel.border = element_blank())
+    hydrogen_plot_formatted <- hydrogen_plot + scale_x_discrete(position="top", expand=c(0,0)) + theme(axis.text.x.top=element_text(angle=85, hjust=0, face="italic"), axis.ticks.x=element_blank(), axis.ticks.y=element_blank()) + labs(x="Hydrogen", y=NULL) +  scale_y_discrete(expand=c(0,0))
   }
 }
 
