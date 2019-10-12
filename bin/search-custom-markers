@@ -14,7 +14,7 @@ from Bio import BiopythonExperimentalWarning
 import warnings
 with warnings.catch_warnings():
     warnings.simplefilter('ignore', BiopythonExperimentalWarning)
-    from Bio import SearchIO
+    from Bio import SearchIO, SeqIO
 
 # Arguments and Setup
 parser = argparse.ArgumentParser(description = "Search custom directory of HMMs")
@@ -69,12 +69,13 @@ if KOFAM == 'ON':
         sys.exit()
 
 # check contents of ko_list to make sure it's the correct file
-with open(KO_LIST) as ko:
-    first_line = ko.readlines()[0]
-    elem = 'knum'
-    if elem not in first_line:
-        print("     This does not look like the ko_list file from the KofamKOALA distribution.")
-        sys.exit()
+if KOFAM == 'ON':
+    with open(KO_LIST) as ko:
+        first_line = ko.readlines()[0]
+        elem = 'knum'
+        if elem not in first_line:
+            print("     This does not look like the ko_list file from the KofamKOALA distribution.")
+            sys.exit()
 
 # setup directories
 os.makedirs(out_intm)
@@ -123,23 +124,6 @@ for genome in genomes:
 reformatted_path = OUTPUT + "/genomes/" + "*.reformatted.faa"
 reformatted_genomes = glob.glob(reformatted_path)
 
-# Run HMMs
-print("Searching for " + prot + " marker in genome set...")
-for genome in reformatted_genomes: 
-    name=os.path.basename(genome).replace(".reformatted.faa", "").strip().splitlines()[0]
-    outname= OUTPUT + "/out/"+dir+"/"+name + ".out"
-    if KOFAM == 'ON':
-        kofam_name = os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
-        scores = pd.read_csv(KO_LIST, delimiter="\t")
-        scoredic = scores.set_index('knum')['threshold'].to_dict()
-        tc = scoredic.get(kofam_name)
-        cmd = ["hmmsearch","-T"+tc,"--tblout="+outname,marker,genome]
-        subprocess.call(cmd, stdout=FNULL)
-    else:
-        cmd = ["hmmsearch","--cut_tc","--tblout="+outname, marker, genome]
-        subprocess.call(cmd, stdout=FNULL)
-
-
 print("Running HMM searches using custom marker set...")
 for genome in reformatted_genomes: 
     name=os.path.basename(genome).replace(".reformatted.faa", "").strip().splitlines()[0]
@@ -178,28 +162,42 @@ for path, dirs, files in result_dirs:
                 all_dicts[os.path.basename(file).split("-")[0]]=genome_dict
 df=pd.DataFrame.from_dict(all_dicts, orient="index", dtype=None)
 df.fillna(0, inplace=True)
-print(df)
 
-# Reformat dataframe in order of marker function, find markers in none of the genomes and input NaN for all
+# Reformat dataframe in order of marker function, find markers/genomes with 0 hits and place 0's
+# rows
+all_rows = []
+absent_rows = []
+existing_rows = df.index
+# columns
 all_cols=[]
 absent_cols=[]
 existing_markers = df.columns
+# check for missing rows
+for genome in reformatted_genomes:
+    name=os.path.basename(genome).replace(".reformatted.faa","")
+    if name not in existing_rows:
+        all_rows.append(name)
+for row in existing_rows:
+    all_rows.append(row)
+df_rows = df.reindex(index=all_rows)
+# check for missing cols
 for marker in markers:
-    prot=os.path.basename(marker).replace(".hmm", "")
+    prot=os.path.basename(marker).replace(".hmm","")
     if prot not in existing_markers:
         all_cols.append(prot)
 for col in existing_markers:
     all_cols.append(col)
-df_all=df.reindex(columns=all_cols)
+df_all = df_rows.reindex(columns=all_cols)
 df_all.fillna(0, inplace=True)
-out_table = OUTPUT + "/results/" + OUTFILE
-df_all.to_csv(out_table)
+out_stats = OUTPUT + "/results/" + OUTFILE
+df_all.to_csv(out_stats)
 
 print("Plotting results...")
 METADATA = args.metadata
 FIGOUT = args.heatmap
 AGG = args.aggregate
-plot_cmd = ['make-heatmap.R', out_table, METADATA, AGG, FIGOUT, CUSTOM]
+CUSTOM = str('CUSTOM')
+plot_cmd = ['make-heatmap.R', out_stats, METADATA, AGG, FIGOUT, CUSTOM]
 subprocess.call(plot_cmd, stdout=FNULL)
 
 # end message

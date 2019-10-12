@@ -135,18 +135,32 @@ for path, dirs, files in result_dirs:
                 all_dicts[os.path.basename(file).split("-")[0]]=genome_dict
 df=pd.DataFrame.from_dict(all_dicts, orient="index", dtype=None)
 
-# Reformat dataframe in order of marker function, find markers in none of the genomes and input NaN for all
+# Reformat dataframe in order of marker function, find markers/genomes with no results and place 0's
+# rows
+all_rows = []
+absent_rows = []
+existing_rows = df.index
+# columns
 all_cols=[]
 absent_cols=[]
 existing_markers = df.columns
-all_markers=glob.glob("metabolic_markers/*.hmm")
-for marker in all_markers:
-    prot=os.path.basename(marker).replace(".hmm", "")
+markers=glob.glob("metabolic_markers/*.hmm")
+# check for missing rows
+for genome in reformatted_genomes:
+    name=os.path.basename(genome).replace(".reformatted.faa","")
+    if name not in existing_rows:
+        all_rows.append(name)
+for row in existing_rows:
+    all_rows.append(row)
+df_rows = df.reindex(index=all_rows)
+# check for missing cols
+for marker in markers:
+    prot=os.path.basename(marker).replace(".hmm","")
     if prot not in existing_markers:
         all_cols.append(prot)
 for col in existing_markers:
     all_cols.append(col)
-df_all=df.reindex(columns=all_cols)
+df_all = df_rows.reindex(columns=all_cols)
 df_all.fillna(0, inplace=True)
 
 # open list in data/metabolic-markers.txt to reorder by function
@@ -232,7 +246,6 @@ reordered_cols = ['ndma_methanol_dehydrogenase_TIGR04266',
 'Hydrogenase_Group_4']
 
 df_final=df_all[reordered_cols]
-df_final.rename(columns= {df_final.columns[0]: "genome"}, inplace=True)
 out_stats = OUTPUT + "/results/" + OUTFILE
 df_final.to_csv(out_stats)
 
@@ -240,7 +253,8 @@ print("Plotting results...")
 METADATA = args.metadata
 FIGOUT = args.heatmap
 AGG = args.aggregate
-plot_cmd = ['make-heatmap.R', out_table, METADATA, AGG, FIGOUT, CURATED]
+CURATED = str('CURATED')
+plot_cmd = ['make-heatmap.R', out_stats, METADATA, AGG, FIGOUT, CURATED]
 subprocess.call(plot_cmd, stdout=FNULL)
 
 # end message
