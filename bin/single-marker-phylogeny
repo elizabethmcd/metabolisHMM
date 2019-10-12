@@ -38,6 +38,9 @@ optional.add_argument("--ko_list", metavar='KOLIST', help="Point to location of 
 ribosomal.add_argument("--ribo_tree", metavar='RIBO', default='OFF', help="Make corresponding ribosomal phylogeny of genomes containing hits of the provided single marker. " )
 ribosomal.add_argument("--domain", metavar='DOMAIN', help="If constructing corresponding ribosomal tree, select the domain for which your hits belong to. Options: bacteria, archaea, all")
 ribosomal.add_argument('--loci', metavar='LOCI', default='12', help='Output genomes with less than x number of loci. By default prints genomes that have less than 12 ribosomal loci markers.')
+optional.add_argument('--metadata', metavar='METADATA', help='Provided .csv formatted metadata file of filenames and corresponding taxonomical or group names")
+optional.add_argument('--itol_file', metavar='ITOL', help='Output iTOL formatted metadata file for changing leaf labels to taxonomical or group names")
+
 
 # if no arguments given, print help message
 if len(sys.argv) < 2:
@@ -222,6 +225,18 @@ elif PHYTOOL == "raxml":
     fileIn= OUTPUT + "/results/"+marker_name+".aln"
     raxCmd = "raxmlHPC-PTHREADS -f a -m PROTGAMMAAUTO -p 12345 -x 12345 -# 100 -s "+fileIn+" -T "+THREADS+" -n "+outname
     os.system(raxCmd)
+
+
+# optional metadata and itol output if provided
+METADATA = args.metadata
+
+# header for itol output
+OUT_ITOL = open(args.itol, "w")
+OUT_ITOL.write("LABELS\nSEPARATOR TAB\nDATA\n")
+with open(METADATA, "r") as f:
+    records = f.rstrip()
+    filename, labelname = record.split(',')
+    OUT_ITOL.write('%s\t%s\n')
 
 # Corresponding ribosomal tree of hits and options
 # lists
