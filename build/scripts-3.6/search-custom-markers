@@ -1,4 +1,4 @@
-#!/Users/emcdaniel/anaconda3/bin/python 
+#!/Users/emcdaniel/anaconda3/bin/python3 
 
 ###############################################################
 # metabolisHMM - A tool for exploring and visualizing the distribution and evolutionary histories of metabolic markers
@@ -38,7 +38,7 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 # version to print
-VERSION = '3.0'
+VERSION = '4.0'
 
 # Beginning message
 print('')

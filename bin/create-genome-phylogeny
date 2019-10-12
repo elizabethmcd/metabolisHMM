@@ -32,8 +32,8 @@ required.add_argument('--domain', metavar='DOMAIN', help='archaea, bacteria, all
 required.add_argument('--phylogeny', metavar='PHY', help='fastree, raxml')
 optional.add_argument('--threads',metavar='THREADS',help='Optional: number of threads for calculating a tree using RAxML. This is not taken into account using Fastree')
 optional.add_argument('--loci', metavar='LOCI', default='12', help='Output genomes with less than x number of loci. By default prints genomes that have less than 12 ribosomal loci markers.')
-optional.add_argument('--metadata', metavar='METADATA', help='Provided .csv formatted metadata file of filenames and corresponding taxonomical or group names")
-optional.add_argument('--itol_file', metavar='ITOL', help='Output iTOL formatted metadata file for changing leaf labels to taxonomical or group names")
+optional.add_argument('--metadata', metavar='METADATA', help="Provided .csv formatted metadata file of filenames and corresponding taxonomical or group names")
+optional.add_argument('--itol_file', metavar='ITOL', help="Output iTOL formatted metadata file for changing leaf labels to taxonomical or group names")
 
 # if no arguments given, print help message
 if len(sys.argv) < 2:
@@ -41,7 +41,7 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 # version to print
-VERSION = '3.0'
+VERSION = '4.0'
 
 # Beginning message
 print('')

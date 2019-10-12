@@ -1,4 +1,4 @@
-#!python 
+#!/Users/emcdaniel/anaconda3/bin/python3 
 
 ###############################################################
 # metabolisHMM - A tool for exploring and visualizing the distribution and evolutionary histories of metabolic markers
