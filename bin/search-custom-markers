@@ -38,7 +38,7 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 # version to print
-VERSION = '2.0'
+VERSION = '3.0'
 
 # Beginning message
 print('')
@@ -197,7 +197,8 @@ METADATA = args.metadata
 FIGOUT = args.heatmap
 AGG = args.aggregate
 CUSTOM = str('CUSTOM')
-plot_cmd = ['make-heatmap.R', out_stats, METADATA, AGG, FIGOUT, CUSTOM]
+plot_cmd = ['Rscript','make-heatmap.R', out_stats, METADATA, AGG, FIGOUT, CUSTOM]
+print(plot_cmd)
 subprocess.call(plot_cmd, stdout=FNULL)
 
 # end message

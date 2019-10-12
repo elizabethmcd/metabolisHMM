@@ -12,6 +12,6 @@ author='Elizabeth McDaniel',
 author_email='emcdaniel@wisc.edu',
 license='GNU',
 packages=find_packages(),
-scripts=['bin/create-genome-phylogeny','bin/search-custom-markers','bin/single-marker-phylogeny', 'bin/summarize-metabolism', 'bin/make-heatmap.R'],
+scripts=['bin/create-genome-phylogeny','bin/search-custom-markers','bin/single-marker-phylogeny', 'bin/summarize-metabolism'],
 install_requires=requirements,
 zip_safe=False)

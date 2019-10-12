@@ -63,13 +63,14 @@ merge.markers.metadata <- function(markers, metadata, aggregate.option, outdir){
 }
 
 make.heatmap <- function(stats_table, file.path, heatmap.option, directory){
-  if(heatmap.option == 'CUSTOM'){
+  option <- heatmap.option
+  if(option == 'CUSTOM'){
     heatmap.file.path <- file.path
     figureOut <- file.path(directory,heatmap.file.path)
     table_melted <- melt(stats_table, id.vars="group")
     table_melted <- table_melted %>% mutate(group = factor(group),group = factor(group, levels = rev(levels(group))))
-    plot <- table_melted %>% ggplot(aes(x=variable, y=(group), fill=value)) + geom_tile(color='black') + scale_fill_viridis_c(alpha=1,begin=0,end=1,direction=-1) + theme_bw() + theme(panel.grid = element_blank(), panel.border = element_blank())
-    plot_formatted <- plot + theme(axis.text.x= element_text(angle=85, hjust=1)) + guides(fill = guide_colorbar(nbin = 10)) + scale_y_discrete(expand=c(0,0))
+    plot <- table_melted %>% ggplot(aes(x=variable, y=(group), fill=value)) + geom_tile(color='black') + scale_fill_viridis_c(alpha=1,begin=0,end=1,direction=-1) + theme(panel.grid = element_blank(), panel.border = element_blank(), plot.margin = unit(c(0, 0, 0, 0), "cm"))
+    plot_formatted <- plot + scale_x_discrete(position="top", expand=c(0,0)) + theme(axis.text.x.top= element_text(angle=85, hjust=0), axis.ticks.x=element_blank(), axis.ticks.y=element_blank()) + labs(x=NULL,y=NULL) + guides(fill = guide_colorbar(nbin = 10)) + scale_y_discrete(expand=c(0,0))
     ggsave(file=figureOut, plot_formatted, height=15, width=55, units=c("cm"))
   }
   if(heatmap.option == 'CURATED'){
@@ -132,4 +133,5 @@ make.heatmap <- function(stats_table, file.path, heatmap.option, directory){
 markers <- import.markers(File = markers.file.path)
 metadata <- import.metadata(File = metadata.file.path)
 out <- get.output.directory(file.path=markers.file.path)
-result <- merge.markers.metadata(markers, metadata, aggregate.option, outdir=out)
+stats_table <- merge.markers.metadata(markers, metadata, aggregate.option, outdir=out)
+heatmap <- make.heatmap(stats_table, file.path=heatmap.file.path, heatmap.option, directory=out )

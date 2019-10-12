@@ -10,11 +10,12 @@
 
 import os, sys, glob, subprocess, argparse
 import pandas as pd 
+import seaborn
 from Bio import BiopythonExperimentalWarning
 import warnings
 with warnings.catch_warnings():
     warnings.simplefilter('ignore', BiopythonExperimentalWarning)
-    from Bio import SearchIO
+    from Bio import SearchIO, SeqIO
 
 # Arguments and Setup 
 parser = argparse.ArgumentParser(description = "Create a summary of metabolic markers spanning biogeochemical cycles")
@@ -23,7 +24,7 @@ required = parser.add_argument_group("required arguments")
 optional = parser.add_argument_group("optional arguments")
 required.add_argument('--input', metavar='GENOMEDIR', help='Directory where genomes to be screened are held')
 required.add_argument('--output', metavar='OUTPUT', help="Directory to store results and intermediate files")
-optional.add_argument('--summary', metavar='OUTFILE', default="metabolic-summary-results.csv", help="Summary file of metabolic marker statistics in CSV format")
+optional.add_argument('--summary', metavar='OUTFILE', default="raw-metabolic-summary-results.csv", help="Summary file of metabolic marker statistics in CSV format")
 optional.add_argument('--heatmap', metavar='HEATOUT', default='metabolic-summary-results-heatmap.pdf', help="Summary heatmap of metabolic markers in PDF format. If you provide a custom name, it must end in .pdf" )
 required.add_argument('--metadata', metavar='METADATA', help='Metadata file with taxonomical classifications or groups associated with genome file names. Needs to be a .csv file with the genome/filename (everything before .fna) and the group name.')
 optional.add_argument('--aggregate', metavar='AGG', default='OFF', help="Aggregate metadata names by group = ON, visualize each genome individually = OFF" )
@@ -34,7 +35,7 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 # version to print
-VERSION = '2.0'
+VERSION = '3.0'
 
 # Beginning message
 print('')
@@ -56,6 +57,11 @@ genomes=glob.glob(GENOMEFILES)
 # check if directory exists
 if os.path.isdir(OUTPUT) == True:
     print("Directory "+ OUTPUT +" already exists! Please create different directory or remove the existing one.")
+    sys.exit()
+
+# check for curated metabolic markers direcotry
+if os.path.isdir("metabolic_markers/") == False:
+    print("     The directory of curated metabolic markers could not be found."+"\n"+"     Please either download the markers from https://github.com/elizabethmcd/metabolisHMM/releases/download/v2.0/metabolisHMM_v2.0_markers.tgz and decompress the tarball, or move the directory to where you are running the workflow from.")
     sys.exit()
 
 # make directories
@@ -100,7 +106,7 @@ reformatted_path = OUTPUT + "/genomes/" + "*.reformatted.faa"
 reformatted_genomes = glob.glob(reformatted_path)
 
 # Run HMMs
-print("Running metabolic marker HMMsearches...")
+print("Screening curated metabolic markers...")
 for genome in reformatted_genomes: 
     name=os.path.basename(genome).replace(".reformatted.faa", "").strip().splitlines()[0]
     dir=name
@@ -129,23 +135,116 @@ for path, dirs, files in result_dirs:
                 all_dicts[os.path.basename(file).split("-")[0]]=genome_dict
 df=pd.DataFrame.from_dict(all_dicts, orient="index", dtype=None)
 
-# Reformat dataframe in order of marker function, find markers in none of the genomes and input NaN for all
+# Reformat dataframe in order of marker function, find markers/genomes with no results and place 0's
+# rows
+all_rows = []
+absent_rows = []
+existing_rows = df.index
+# columns
 all_cols=[]
 absent_cols=[]
 existing_markers = df.columns
-all_markers=glob.glob("metabolic_markers/*.hmm")
-for marker in all_markers:
-    prot=os.path.basename(marker).replace(".hmm", "")
+markers=glob.glob("metabolic_markers/*.hmm")
+# check for missing rows
+for genome in reformatted_genomes:
+    name=os.path.basename(genome).replace(".reformatted.faa","")
+    if name not in existing_rows:
+        all_rows.append(name)
+for row in existing_rows:
+    all_rows.append(row)
+df_rows = df.reindex(index=all_rows)
+# check for missing cols
+for marker in markers:
+    prot=os.path.basename(marker).replace(".hmm","")
     if prot not in existing_markers:
         all_cols.append(prot)
 for col in existing_markers:
     all_cols.append(col)
-df_all=df.reindex(columns=all_cols)
+df_all = df_rows.reindex(columns=all_cols)
 df_all.fillna(0, inplace=True)
 
 # open list in data/metabolic-markers.txt to reorder by function
-with open("data/marker-list.txt") as f:
-    reordered_cols = f.read().splitlines()
+reordered_cols = ['ndma_methanol_dehydrogenase_TIGR04266',
+'madA_TIGR02659',
+'madB_TIGR02658',
+'fdh_thiol_id_TIGR02819',
+'sfh_TIGR02821',
+'sgdh_TIGR02818',
+'smdh_TIGR03451',
+'fae_TIGR03126',
+'fmtf_TIGR03119',
+'mtmc_TIGR03120',
+'fdhA_TIGR01591',
+'fdhB_TIGR01582',
+'fdhC_TIGR01583',
+'carbon_monoxide_dehydrogenase_coxL_TIGR02416',
+'carbon_monoxide_dehydrogenase_coxM',
+'carbon_monoxide_dehydrogenase_coxS',
+'rubisco_form_I',
+'rubisco_form_II',
+'rubisco_form_III',
+'rubisco_form_II_III',
+'rubisco_form_IV',
+'codhC_TIGR00316',
+'codhD_TIGR00381',
+'codh_catalytic_TIGR01702',
+'acetate_citrate_lyase_aclA',
+'acetate_citrate_lyase_aclB',
+'nifA_Mo_TIGR01282',
+'nifB_Mo_TIGR01286',
+'nifH_TIGR01287',
+'nitrite_oxidoreductase_nxrA',
+'nitrite_oxidoreductase_nxrB',
+'napA_TIGR01706',
+'napB_PF03892',
+'narG_TIGR01580',
+'narH_TIGR01660',
+'nrfA_TIGR03152',
+'nrfH_TIGR03153',
+'nirB_TIGR02374',
+'nirD_TIGR02378',
+'nirK_TIGR02376',
+'nitrite_reductase_nirS',
+'nitric_oxide_reductase_norB',
+'nitric_oxide_reductase_norC',
+'nosD_TIGR04247',
+'nosZ_TIGR04246',
+'hydrazine_oxidase_hzoA',
+'hydrazine_synthase_hzsA',
+'fccB_PF09242',
+'sulfide_quinone_oxidoreductase_sqr',
+'sulfur_dioxygenase_sdo',
+'aprA_TIGR02061',
+'sat_TIGR00339',
+'dsrA_TIGR02064',
+'dsrB_TIGR02066',
+'dsrD_PF08679',
+'thiosulfate_reductase_phsA',
+'soxB_TIGR04486',
+'soxC_TIGR04555',
+'soxY_TIGR04488',
+'coxA_TIGR02891',
+'coxB_TIGR02866',
+'ccoN_TIGR00780',
+'ccoO_TIGR00781',
+'ccoP_TIGR00782',
+'cyoA_TIGR01433',
+'cyoD_TIGR02847',
+'cyoE_TIGR01473',
+'cydA_PF01654',
+'cydB_TIGR00203',
+'qoxA_TIGR01432',
+'FeFeHydrogenase_TIGR02512',
+'FeFeHydrogenase_TIGR04105',
+'Hydrogenase_Group_1',
+'Hydrogenase_Group_2a',
+'Hydrogenase_Group_2b',
+'Hydrogenase_Group_3a',
+'Hydrogenase_Group_3b',
+'Hydrogenase_Group_3c',
+'Hydrogenase_Group_3d',
+'Hydrogenase_Group_4']
+
 df_final=df_all[reordered_cols]
 out_stats = OUTPUT + "/results/" + OUTFILE
 df_final.to_csv(out_stats)
@@ -154,7 +253,8 @@ print("Plotting results...")
 METADATA = args.metadata
 FIGOUT = args.heatmap
 AGG = args.aggregate
-plot_cmd = ['Rscript','make-heatmap.R', out_stats, METADATA, AGG, FIGOUT]
+CURATED = str('CURATED')
+plot_cmd = ['Rscript', 'make-heatmap.R', out_stats, METADATA, AGG, FIGOUT, CURATED]
 subprocess.call(plot_cmd, stdout=FNULL)
 
 # end message
