@@ -26,6 +26,7 @@ parser = argparse.ArgumentParser(description = "Create ribosomal phylogenies usi
 parser._action_groups.pop()
 required = parser.add_argument_group("required arguments")
 optional = parser.add_argument_group("optional arguments")
+metadata = parser.add_argument_group("metadata output files for ITOL")
 required.add_argument('--input', metavar='INPUT', help='Directory where genomes to be screened are held')
 required.add_argument('--output', metavar='OUTPUT', help='Directory to store results and intermediate files')
 required.add_argument('--domain', metavar='DOMAIN', help='archaea, bacteria, all')
@@ -34,6 +35,10 @@ optional.add_argument('--threads',metavar='THREADS',help='Optional: number of th
 optional.add_argument('--loci', metavar='LOCI', default='12', help='Output genomes with less than x number of loci. By default prints genomes that have less than 12 ribosomal loci markers.')
 optional.add_argument('--metadata', metavar='METADATA', help="Provided .csv formatted metadata file of filenames and corresponding taxonomical or group names")
 optional.add_argument('--itol_file', metavar='ITOL', help="Output iTOL formatted metadata file for changing leaf labels to taxonomical or group names")
+metadata.add_argument('--metadata', metavar='METADATA',help='Option for outputting ITOL formatted metadata files. ON or OFF')
+metadata.add_argument('--names', metavar='NAMES', help="Provided .csv formatted metadata file of filenames and corresponding taxonomical or group names")
+metadata.add_argument('--itol_file', metavar='ITOL', help="Output iTOL formatted metadata file for changing leaf labels to taxonomical or group names")
+
 
 # if no arguments given, print help message
 if len(sys.argv) < 2:
@@ -59,6 +64,9 @@ OUTPUT = args.output
 out_intm = OUTPUT + "/out"
 out_results = OUTPUT + "/results"
 out_genomes = OUTPUT + "/genomes"
+METADATA = args.metadata
+NAMES = args.names
+ITOL_FILE = args.itol_file
 
 # check if directory exists
 if os.path.isdir(OUTPUT) == True:
@@ -78,6 +86,22 @@ os.makedirs(out_genomes)
 # turns off printing to stdout
 FNULL = open(os.devnull, 'w')
 DEVNULL = open(os.devnull, 'wb')
+
+# if metadata option on, check the names file and itol path provided
+if METADATA == 'ON':
+    if os.path.exists(NAMES) == True:
+    # header for itol output
+        ITOL_PATH = OUTPUT + "/results/" + ITOL_FILE
+        OUT_ITOL = open(ITOL_PATH, "w")
+        OUT_ITOL.write("LABELS\nSEPARATOR TAB\nDATA\n")
+        with open(NAMES, "r") as f:
+            for record in f:
+                filename, labelname = record.rstrip().split(',')
+                OUT_ITOL.write('%s\t%s\n' % (filename, labelname))
+elif METADATA == 'OFF':
+    pass
+
+
 
 # different ribosomal markers for archaea/bacteria/all
 bacteria_list = ['rpL14','rpL15','rpL16','rpL18','rpL22','rpL24','rpL2','rpL3','rpL4','rpL5','rpL6','rpS10','rpS17','rpS19','rpS3','rpS8']

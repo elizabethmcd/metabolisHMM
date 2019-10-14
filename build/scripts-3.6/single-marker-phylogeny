@@ -27,6 +27,7 @@ parser._action_groups.pop()
 required = parser.add_argument_group("required arguments")
 optional = parser.add_argument_group("optional arguments")
 ribosomal = parser.add_argument_group("corresponding ribosomal tree arguments")
+metadata = parser.add_argument_group("metadata output files for ITOL")
 required.add_argument('--input', metavar='INPUT', help='Directory where genomes to be screened are held')
 required.add_argument('--output', metavar='OUTPUT', help='Directory to store results and intermediate files')
 required.add_argument('--marker', metavar='MARKER', help="Location of single marker to run analysis on")
@@ -38,8 +39,9 @@ optional.add_argument("--ko_list", metavar='KOLIST', help="Point to location of 
 ribosomal.add_argument("--ribo_tree", metavar='RIBO', default='OFF', help="Make corresponding ribosomal phylogeny of genomes containing hits of the provided single marker. " )
 ribosomal.add_argument("--domain", metavar='DOMAIN', help="If constructing corresponding ribosomal tree, select the domain for which your hits belong to. Options: bacteria, archaea, all")
 ribosomal.add_argument('--loci', metavar='LOCI', default='12', help='Output genomes with less than x number of loci. By default prints genomes that have less than 12 ribosomal loci markers.')
-optional.add_argument('--metadata', metavar='METADATA', help='Provided .csv formatted metadata file of filenames and corresponding taxonomical or group names")
-optional.add_argument('--itol_file', metavar='ITOL', help='Output iTOL formatted metadata file for changing leaf labels to taxonomical or group names")
+metadata.add_argument('--metadata', metavar='METADATA',help='Option for outputting ITOL formatted metadata files. ON or OFF')
+metadata.add_argument('--names', metavar='NAMES', help="Provided .csv formatted metadata file of filenames and corresponding taxonomical or group names")
+metadata.add_argument('--itol_file', metavar='ITOL', help="Output iTOL formatted metadata file for changing leaf labels to taxonomical or group names")
 
 
 # if no arguments given, print help message
@@ -48,7 +50,7 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 # version to print
-VERSION = '3.0'
+VERSION = '4.0'
 
 # Beginning message
 print('')
@@ -69,6 +71,10 @@ RIBO = args.ribo_tree
 DOMAIN = args.domain
 KOFAM = args.kofam
 KO_LIST = args.ko_list
+METADATA = args.metadata
+NAMES = args.names
+ITOL_FILE = args.itol_file
+
 
 # check if directory exists
 if os.path.isdir(OUTPUT) == True:
@@ -96,12 +102,13 @@ elif KOFAM == 'OFF':
                 print("     You have not provided a threshold cutoff score for your HMM profile. Please add the line TC score-range to your HMM profile.")
                 sys.exit()       
 # check contents of ko_list to make sure it's the correct file
-with open(KO_LIST) as ko:
-    first_line = ko.readlines()[0]
-    elem = 'knum'
-    if elem not in first_line:
-        print("     This does not look like the ko_list file from the KofamKOALA distribution.")
-        sys.exit()
+if KOFAM == 'ON':
+    with open(KO_LIST) as ko:
+        first_line = ko.readlines()[0]
+        elem = 'knum'
+        if elem not in first_line:
+            print("     This does not look like the ko_list file from the KofamKOALA distribution.")
+            sys.exit()
 
 # make directories
 os.makedirs(out_intm)
@@ -120,6 +127,20 @@ os.makedirs(OUTPUT + "/out/"+dir)
 OUT_LIST_PATH = OUTPUT + "/results/" + args.list
 OUT_LIST = open(OUT_LIST_PATH, "w")
 OUT_LIST.write ("genome\tlocus_tag\n")
+
+# if metadata option on, check the names file and itol path provided
+if METADATA == 'ON':
+    if os.path.exists(NAMES) == True:
+    # header for itol output
+        ITOL_PATH = OUTPUT + "/results/" + ITOL_FILE
+        OUT_ITOL = open(ITOL_PATH, "w")
+        OUT_ITOL.write("LABELS\nSEPARATOR TAB\nDATA\n")
+        with open(NAMES, "r") as f:
+            for record in f:
+                filename, labelname = record.rstrip().split(',')
+                OUT_ITOL.write('%s\t%s\n' % (filename, labelname))
+elif METADATA == 'OFF':
+    pass
 
 
 # if .fna predict CDS and reformat header names because prodigal makes them stupid
@@ -226,17 +247,6 @@ elif PHYTOOL == "raxml":
     raxCmd = "raxmlHPC-PTHREADS -f a -m PROTGAMMAAUTO -p 12345 -x 12345 -# 100 -s "+fileIn+" -T "+THREADS+" -n "+outname
     os.system(raxCmd)
 
-
-# optional metadata and itol output if provided
-METADATA = args.metadata
-
-# header for itol output
-OUT_ITOL = open(args.itol, "w")
-OUT_ITOL.write("LABELS\nSEPARATOR TAB\nDATA\n")
-with open(METADATA, "r") as f:
-    records = f.rstrip()
-    filename, labelname = record.split(',')
-    OUT_ITOL.write('%s\t%s\n')
 
 # Corresponding ribosomal tree of hits and options
 # lists
