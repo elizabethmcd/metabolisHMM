@@ -96,12 +96,13 @@ elif KOFAM == 'OFF':
                 print("     You have not provided a threshold cutoff score for your HMM profile. Please add the line TC score-range to your HMM profile.")
                 sys.exit()       
 # check contents of ko_list to make sure it's the correct file
-with open(KO_LIST) as ko:
-    first_line = ko.readlines()[0]
-    elem = 'knum'
-    if elem not in first_line:
-        print("     This does not look like the ko_list file from the KofamKOALA distribution.")
-        sys.exit()
+if KOFAM == 'ON':
+    with open(KO_LIST) as ko:
+        first_line = ko.readlines()[0]
+        elem = 'knum'
+        if elem not in first_line:
+            print("     This does not look like the ko_list file from the KofamKOALA distribution.")
+            sys.exit()
 
 # make directories
 os.makedirs(out_intm)
