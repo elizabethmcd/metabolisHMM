@@ -48,7 +48,7 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 # version to print
-VERSION = '3.0'
+VERSION = '4.0'
 
 # Beginning message
 print('')
@@ -231,13 +231,13 @@ elif PHYTOOL == "raxml":
 # optional metadata and itol output if provided
 METADATA = args.metadata
 
-# header for itol output
-OUT_ITOL = open(args.itol, "w")
-OUT_ITOL.write("LABELS\nSEPARATOR TAB\nDATA\n")
-with open(METADATA, "r") as f:
-    records = f.rstrip()
-    filename, labelname = record.split(',')
-    OUT_ITOL.write('%s\t%s\n')
+if os.path.exists(METADATA) == True:
+    OUT_ITOL = open(args.itol, "w")
+    OUT_ITOL.write("LABELS\nSEPARATOR TAB\nDATA\n")
+    with open(METADATA, "r") as f:
+        records = f.rstrip()
+        filename, labelname = record.split(',')
+        OUT_ITOL.write('%s\t%s\n')
 
 # Corresponding ribosomal tree of hits and options
 # lists
