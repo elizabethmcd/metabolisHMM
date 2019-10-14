@@ -1,4 +1,4 @@
-#! /usr/bin/env python 
+#! /usr/bin/env python3 
 
 ###############################################################
 # metabolisHMM - A tool for exploring and visualizing the distribution and evolutionary histories of metabolic markers
@@ -238,6 +238,8 @@ if os.path.exists(METADATA) == True:
         records = f.rstrip()
         filename, labelname = record.split(',')
         OUT_ITOL.write('%s\t%s\n')
+elif os.path.exists(METADATA) == False:
+    pass
 
 # Corresponding ribosomal tree of hits and options
 # lists
