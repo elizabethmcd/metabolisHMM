@@ -38,8 +38,8 @@ optional.add_argument("--ko_list", metavar='KOLIST', help="Point to location of 
 ribosomal.add_argument("--ribo_tree", metavar='RIBO', default='OFF', help="Make corresponding ribosomal phylogeny of genomes containing hits of the provided single marker. " )
 ribosomal.add_argument("--domain", metavar='DOMAIN', help="If constructing corresponding ribosomal tree, select the domain for which your hits belong to. Options: bacteria, archaea, all")
 ribosomal.add_argument('--loci', metavar='LOCI', default='12', help='Output genomes with less than x number of loci. By default prints genomes that have less than 12 ribosomal loci markers.')
-optional.add_argument('--metadata', metavar='METADATA', help='Provided .csv formatted metadata file of filenames and corresponding taxonomical or group names")
-optional.add_argument('--itol_file', metavar='ITOL', help='Output iTOL formatted metadata file for changing leaf labels to taxonomical or group names")
+optional.add_argument('--metadata', metavar='METADATA', help="Provided .csv formatted metadata file of filenames and corresponding taxonomical or group names")
+optional.add_argument('--itol_file', metavar='ITOL', help="Output iTOL formatted metadata file for changing leaf labels to taxonomical or group names")
 
 
 # if no arguments given, print help message
