@@ -189,8 +189,10 @@ for col in existing_markers:
     all_cols.append(col)
 df_all = df_rows.reindex(columns=all_cols)
 df_all.fillna(0, inplace=True)
+ordered_cols = markers
+df_final = df_all[markers]
 out_stats = OUTPUT + "/results/" + OUTFILE
-df_all.to_csv(out_stats)
+df_final.to_csv(out_stats)
 
 print("Plotting results...")
 METADATA = args.metadata
