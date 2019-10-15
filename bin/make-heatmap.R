@@ -76,15 +76,15 @@ make.heatmap <- function(stats_table, file.path, heatmap.option, directory){
   if(heatmap.option == 'CURATED'){
     heatmap.file.path <- file.path
     figureOut <- file.path(directory,heatmap.file.path)
-    carbon = cbind(stats_table$group, presence_absence[,c(1:26)])
+    carbon = cbind(stats_table$group, stats_table[,c(2:27)])
     colnames(carbon) <- c("group", "MtOH dehy", "madA", "madB", "fdh", "sfh", "sgdh", "smdh", "fae", "fmtF", "mtmc", "fdhA", "fdhB", "fdhC", "coxL", "coxM", "coxS", "rubisco I", "rubisco II", "rubisco III", "rubisco II/III", "rubisco IV", "codhC", "codhD", "codh catalytic", "aclA", "aclB")
-    nitrogen = cbind(stats_table$group, presence_absence[,c(27:47)])
+    nitrogen = cbind(stats_table$group, stats_table[,c(28:48)])
     colnames(nitrogen) <- c("group", "nifA", "nifB", "nifH", "nxrA", "nxrB", "napA", "napB", "narG", "narH", "nrfA", "nrfH", "nirB", "nirD", "nirK", "nirS", "norB", "norC", "nosD", "nosZ", "hzoA", "hzsA")
-    sulfur = cbind(stats_table$group, presence_absence[,c(48:59)])
+    sulfur = cbind(stats_table$group, stats_table[,c(49:60)])
     colnames(sulfur) <- c("group", "fccB", "sqr", "sdo", "aprA", "sat", "dsrA", "dsrB", "dsrD", "phsA", "soxB", "soxC", "soxY")
-    oxygen = cbind(stats_table$group, presence_absence[,c(60:70)])
+    oxygen = cbind(stats_table$group, stats_table[,c(61:71)])
     colnames(oxygen) <- c("group", "coxA", "coxB", "ccoN", "ccoO", "ccoP", "cyoA", "cyoD", "cyoE", "cydA", "cydB", "qoxA")
-    hydrogen = cbind(stats_table$group, presence_absence[,c(71:80)])
+    hydrogen = cbind(stats_table$group, stats_table[,c(72:81)])
     colnames(hydrogen) <- c("group", "FeFe I", "FeFe II", "Group I", "Group IIA", "Group IIB", "Group IIIA", "Group IIIB", "Group IIIC", "Group IIID", "Group IV")
     # individual melted dfs and plots
     # carbon
