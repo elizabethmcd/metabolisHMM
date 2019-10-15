@@ -77,7 +77,7 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 # version to print
-VERSION = '4.0'
+VERSION = '4.1.0'
 
 # Beginning message
 print('')

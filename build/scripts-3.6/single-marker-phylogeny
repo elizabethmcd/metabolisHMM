@@ -10,6 +10,7 @@
 
 import os, sys, glob, subprocess, argparse
 import pandas as pd
+from distutils.spawn import find_executable
 from subprocess import Popen, DEVNULL
 from Bio import BiopythonExperimentalWarning
 from collections import defaultdict, Counter
@@ -43,6 +44,32 @@ metadata.add_argument('--metadata', metavar='METADATA',help='Option for outputti
 metadata.add_argument('--names', metavar='NAMES', help="Provided .csv formatted metadata file of filenames and corresponding taxonomical or group names")
 metadata.add_argument('--itol_file', metavar='ITOL', help="Output iTOL formatted metadata file for changing leaf labels to taxonomical or group names")
 
+# check for required installed dependencies
+# prodigal
+if find_executable('prodigal') is not None:
+    pass
+else:
+    print('You do not have prodigal installed in your path. Please fix this.')
+    sys.exit()
+# hmmsearch
+if find_executable('hmmsearch') is not None:
+    pass
+else:
+    print('You do not have the hmmsearch executable from HMMER in your path. Please fix this.')
+    sys.exit()
+# mafft
+if find_executable('mafft') is not None:
+    pass
+else: 
+    print('You do not have MAFFT installed in your path. Please fix this.')
+    sys.exit()
+# fasttree, later check if phytool is raxml and check for correct raxml argument
+if find_executable('FastTree') is not None:
+    pass
+else: 
+    print('You do not have FastTree installed in your path. Please fix this.')
+    sys.exit()
+
 
 # if no arguments given, print help message
 if len(sys.argv) < 2:
@@ -50,7 +77,7 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 # version to print
-VERSION = '4.0'
+VERSION = '4.1.0'
 
 # Beginning message
 print('')
@@ -74,6 +101,23 @@ KO_LIST = args.ko_list
 METADATA = args.metadata
 NAMES = args.names
 ITOL_FILE = args.itol_file
+
+if PHYTOOL == 'raxml':
+    if find_executable('raxmlHPC-PTHREADS') is not None:
+        pass
+    else:
+        print('You have opted to use raxml for building trees, but do not have the correct executable, raxmlHPC-PTHREADS installed in your path. Please fix this.')
+        sys.exit()
+
+# check for required installed dependencies
+# prodigal
+if os.path.exists('blah') == True:
+    pass
+else:
+    print("You do not have prodigal installed in your path.")
+    sys.exit()
+# hmmer
+
 
 
 # check if directory exists

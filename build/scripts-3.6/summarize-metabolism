@@ -10,7 +10,7 @@
 
 import os, sys, glob, subprocess, argparse
 import pandas as pd 
-import seaborn
+from distutils.spawn import find_executable
 from Bio import BiopythonExperimentalWarning
 import warnings
 with warnings.catch_warnings():
@@ -28,6 +28,22 @@ optional.add_argument('--summary', metavar='OUTFILE', default="raw-metabolic-sum
 optional.add_argument('--heatmap', metavar='HEATOUT', default='metabolic-summary-results-heatmap.pdf', help="Summary heatmap of metabolic markers in PDF format. If you provide a custom name, it must end in .pdf" )
 required.add_argument('--metadata', metavar='METADATA', help='Metadata file with taxonomical classifications or groups associated with genome file names. Needs to be a .csv file with the genome/filename (everything before .fna) and the group name.')
 optional.add_argument('--aggregate', metavar='AGG', default='OFF', help="Aggregate metadata names by group = ON, visualize each genome individually = OFF" )
+optional.add_argument("--plotting", metavar='PLOTTING', default='ON', help="Option to turn plotting Rscript on or off depending on if you want just the raw statistics to perform your own plotting, or keep the default plotting settings. You must have the Rscript make-heatmap.R in your path or in the current working directory. Options= ON,OFF.")
+
+
+# check for required installed dependencies
+# prodigal
+if find_executable('prodigal') is not None:
+    pass
+else:
+    print('You do not have prodigal installed in your path. Please fix this.')
+    sys.exit()
+# hmmsearch
+if find_executable('hmmsearch') is not None:
+    pass
+else:
+    print('You do not have the hmmsearch executable from HMMER in your path. Please fix this.')
+    sys.exit()
 
 # if no arguments given, print help message
 if len(sys.argv) < 2:
@@ -35,12 +51,13 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 # version to print
-VERSION = '4.0'
+VERSION = '4.1.0'
 
 # Beginning message
 print('')
 print('#############################################')
 print('metabolisHMM v' + VERSION)
+
 
 # arguments setup
 args = parser.parse_args()
@@ -53,6 +70,7 @@ out_genomes = OUTPUT + "/genomes"
 OUTFILE = args.summary
 markers=glob.glob("metabolic_markers/*.hmm")
 genomes=glob.glob(GENOMEFILES)
+PLOTTING = args.plotting
 
 # check if directory exists
 if os.path.isdir(OUTPUT) == True:
@@ -63,6 +81,14 @@ if os.path.isdir(OUTPUT) == True:
 if os.path.isdir("metabolic_markers/") == False:
     print("     The directory of curated metabolic markers could not be found."+"\n"+"     Please either download the markers from https://github.com/elizabethmcd/metabolisHMM/releases/download/v2.0/metabolisHMM_v2.0_markers.tgz and decompress the tarball, or move the directory to where you are running the workflow from.")
     sys.exit()
+
+# check if Rscript for plotting in current working directory
+if PLOTTING == 'ON':
+    if os.path.exists("make-heatmap.R") == True:
+        pass
+    else:
+        print(" You do not have the Rscript make-heatmap.R in your path or the current working directory to use the plotting functions from. Please fix this.")
+        sys.exit()
 
 # make directories
 os.makedirs(out_intm)
@@ -249,13 +275,16 @@ df_final=df_all[reordered_cols]
 out_stats = OUTPUT + "/results/" + OUTFILE
 df_final.to_csv(out_stats)
 
-print("Plotting results...")
-METADATA = args.metadata
-FIGOUT = args.heatmap
-AGG = args.aggregate
-CURATED = str('CURATED')
-plot_cmd = ['Rscript', 'make-heatmap.R', out_stats, METADATA, AGG, FIGOUT, CURATED]
-subprocess.call(plot_cmd, stdout=FNULL)
+if PLOTTING == 'ON':
+    print("Plotting results...")
+    METADATA = args.metadata
+    FIGOUT = args.heatmap
+    AGG = args.aggregate
+    CURATED = str('CURATED')
+    plot_cmd = ['Rscript', 'make-heatmap.R', out_stats, METADATA, AGG, FIGOUT, CURATED]
+    subprocess.call(plot_cmd, stdout=FNULL)
+elif PLOTTING == 'OFF':
+    pass
 
 # end message
 print("Done! Find your results in "+ OUTPUT + "/results/")
