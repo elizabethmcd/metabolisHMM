@@ -42,7 +42,7 @@ ribosomal.add_argument("--domain", metavar='DOMAIN', help="If constructing corre
 ribosomal.add_argument('--loci', metavar='LOCI', default='12', help='Output genomes with less than x number of loci. By default prints genomes that have less than 12 ribosomal loci markers.')
 metadata.add_argument('--metadata', metavar='METADATA',help='Option for outputting ITOL formatted metadata files. ON or OFF')
 metadata.add_argument('--names', metavar='NAMES', help="Provided .csv formatted metadata file of filenames and corresponding taxonomical or group names")
-metadata.add_argument('--itol_file', metavar='ITOL', help="Output iTOL formatted metadata file for changing leaf labels to taxonomical or group names")
+metadata.add_argument('--itol_file', metavar='ITOL', default="itol_metadata.txt", help="Output iTOL formatted metadata file for changing leaf labels to taxonomical or group names")
 
 # check for required installed dependencies
 # prodigal
@@ -109,24 +109,13 @@ if PHYTOOL == 'raxml':
         print('You have opted to use raxml for building trees, but do not have the correct executable, raxmlHPC-PTHREADS installed in your path. Please fix this.')
         sys.exit()
 
-# check for required installed dependencies
-# prodigal
-if os.path.exists('blah') == True:
-    pass
-else:
-    print("You do not have prodigal installed in your path.")
-    sys.exit()
-# hmmer
-
-
-
 # check if directory exists
 if os.path.isdir(OUTPUT) == True:
     print("Directory "+ OUTPUT +" already exists! Please create different directory or remove the existing one.")
     sys.exit()
 
 # if ribosomal option on, check that ribosomal markers directory exists
-if RIBO == True:
+if RIBO == 'ON':
     if os.path.isdir("ribosomal_markers/") == False:
         print("     The ribosomal markers directory could not be found."+"\n"+"     Please either download the markers from https://github.com/elizabethmcd/metabolisHMM/releases/download/v2.0/metabolisHMM_v2.0_markers.tgz and decompress the tarball, or move the directory to where you are running the workflow from.")
         sys.exit()
@@ -351,7 +340,7 @@ if RIBO == 'ON':
         os.system(mafft_cmd)
     prot_alignments = OUTPUT + "/ribo_out/*.aln"
     infiles = glob.glob(prot_alignments)
-    target = args.marker
+    target = os.path.basename(args.marker).replace(".hmm", "").strip().splitlines()[0]
     concatout = OUTPUT + "/ribo_out/"+DOMAIN+"-"+target+"-concatenated-ribosomal-alignment.fasta"
     alignments = [AlignIO.read(open(f, "r"), "fasta") for f in infiles]
     all_labels = set(seq.id for aln in alignments for seq in aln)
