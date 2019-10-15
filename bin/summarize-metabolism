@@ -10,7 +10,7 @@
 
 import os, sys, glob, subprocess, argparse
 import pandas as pd 
-import seaborn
+from distutils.spawn import find_executable
 from Bio import BiopythonExperimentalWarning
 import warnings
 with warnings.catch_warnings():
@@ -29,6 +29,20 @@ optional.add_argument('--heatmap', metavar='HEATOUT', default='metabolic-summary
 required.add_argument('--metadata', metavar='METADATA', help='Metadata file with taxonomical classifications or groups associated with genome file names. Needs to be a .csv file with the genome/filename (everything before .fna) and the group name.')
 optional.add_argument('--aggregate', metavar='AGG', default='OFF', help="Aggregate metadata names by group = ON, visualize each genome individually = OFF" )
 
+# check for required installed dependencies
+# prodigal
+if find_executable('prodigal') is not None:
+    pass
+else:
+    print('You do not have prodigal installed in your path. Please fix this.')
+    sys.exit()
+# hmmsearch
+if find_executable('hmmsearch') is not None:
+    pass
+else:
+    print('You do not have the hmmsearch executable from HMMER in your path. Please fix this.')
+    sys.exit()
+
 # if no arguments given, print help message
 if len(sys.argv) < 2:
     parser.print_help()
@@ -41,6 +55,7 @@ VERSION = '4.0'
 print('')
 print('#############################################')
 print('metabolisHMM v' + VERSION)
+
 
 # arguments setup
 args = parser.parse_args()

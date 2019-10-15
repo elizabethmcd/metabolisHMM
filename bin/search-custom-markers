@@ -10,6 +10,7 @@
 
 import os, sys, glob, argparse, subprocess
 import pandas as pd 
+from distutils.spawn import find_executable
 from Bio import BiopythonExperimentalWarning
 import warnings
 with warnings.catch_warnings():
@@ -32,6 +33,20 @@ optional.add_argument('--aggregate', metavar='AGG', default='OFF', help="Aggrega
 optional.add_argument('--kofam', metavar='KOFAM', help='Path to KofamKOALA description list with threshold cutoff scores to use with HMM profiles')
 optional.add_argument("--ko_list", metavar='KOLIST', help="Point to location of the KofamKoala ko_list file if using the KofamKOALA KEGG HMMs")
 
+# check for required installed dependencies
+# prodigal
+if find_executable('prodigal') is not None:
+    pass
+else:
+    print('You do not have prodigal installed in your path. Please fix this.')
+    sys.exit()
+# hmmsearch
+if find_executable('hmmsearch') is not None:
+    pass
+else:
+    print('You do not have the hmmsearch executable from HMMER in your path. Please fix this.')
+    sys.exit()
+
 # if no arguments given, print help message
 if len(sys.argv) < 2:
     parser.print_help()
@@ -44,6 +59,7 @@ VERSION = '4.0'
 print('')
 print('#############################################')
 print('metabolisHMM v' + VERSION)
+
 
 # arguments setup
 args = parser.parse_args()
