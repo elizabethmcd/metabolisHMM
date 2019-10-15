@@ -32,6 +32,8 @@ required.add_argument('--metadata', metavar='METADATA', help='Metadata file with
 optional.add_argument('--aggregate', metavar='AGG', default='OFF', help="Aggregate metadata names by group = ON, visualize each genome individually = OFF" )
 optional.add_argument('--kofam', metavar='KOFAM', help='Path to KofamKOALA description list with threshold cutoff scores to use with HMM profiles')
 optional.add_argument("--ko_list", metavar='KOLIST', help="Point to location of the KofamKoala ko_list file if using the KofamKOALA KEGG HMMs")
+optional.add_argument("--plotting", metavar='PLOTTING', default='ON', help="Option to turn plotting Rscript on or off depending on if you want just the raw statistics to perform your own plotting, or keep the default plotting settings. You must have the Rscript make-heatmap.R in your path or in the current working directory. Options= ON,OFF.")
+
 
 # check for required installed dependencies
 # prodigal
@@ -72,6 +74,7 @@ out_results = OUTPUT + "/results"
 out_genomes = OUTPUT + "/genomes"
 KOFAM = args.kofam
 KO_LIST = args.ko_list
+PLOTTING = args.plotting
 
 # check if directory exists
 if os.path.isdir(OUTPUT) == True:
@@ -92,6 +95,14 @@ if KOFAM == 'ON':
         if elem not in first_line:
             print("     This does not look like the ko_list file from the KofamKOALA distribution.")
             sys.exit()
+
+# check if Rscript for plotting in current working directory
+if PLOTTING == 'ON':
+    if os.path.exists("make-heatmap.R") == True:
+        pass
+    else:
+        print(" You do not have the Rscript make-heatmap.R in your path or the current working directory to use the plotting functions from. Please fix this.")
+        sys.exit()
 
 # setup directories
 os.makedirs(out_intm)
@@ -210,14 +221,16 @@ df_final = df_all[markers]
 out_stats = OUTPUT + "/results/" + OUTFILE
 df_final.to_csv(out_stats)
 
-print("Plotting results...")
-METADATA = args.metadata
-FIGOUT = args.heatmap
-AGG = args.aggregate
-CUSTOM = str('CUSTOM')
-plot_cmd = ['Rscript','make-heatmap.R', out_stats, METADATA, AGG, FIGOUT, CUSTOM]
-print(plot_cmd)
-subprocess.call(plot_cmd, stdout=FNULL)
+if PLOTTING == 'ON':
+    print("Plotting results...")
+    METADATA = args.metadata
+    FIGOUT = args.heatmap
+    AGG = args.aggregate
+    CUSTOM = str('CUSTOM')
+    plot_cmd = ['Rscript','make-heatmap.R', out_stats, METADATA, AGG, FIGOUT, CUSTOM]
+    subprocess.call(plot_cmd, stdout=FNULL)
+elif PLOTTING == 'OFF':
+    pass
 
 # end message
 print("Done! Find your results in "+ OUTPUT + "/results/")
