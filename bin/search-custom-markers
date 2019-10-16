@@ -216,8 +216,15 @@ for col in existing_markers:
     all_cols.append(col)
 df_all = df_rows.reindex(columns=all_cols)
 df_all.fillna(0, inplace=True)
-ordered_cols = markers
-df_final = df_all[markers]
+# reorder columns
+prots = []
+with open(MARKERS_FILE) as f:
+    markers = f.read().splitlines()
+    for marker in markers:
+        prot = os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
+        prots.append(prot)
+ordered_cols = prots
+df_final = df_all[prots]
 out_stats = OUTPUT + "/results/" + OUTFILE
 df_final.to_csv(out_stats)
 
