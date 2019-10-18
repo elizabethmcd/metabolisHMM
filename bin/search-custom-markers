@@ -22,18 +22,29 @@ parser = argparse.ArgumentParser(description = "Search custom directory of HMMs"
 parser._action_groups.pop()
 required = parser.add_argument_group("required arguments")
 optional = parser.add_argument_group("optional arguments")
+kofam = parser.add_argument_group("kofam database arguments")
+plotting = parser.add_argument_group("plotting arguments")
+
+# required
 required.add_argument('--input', metavar='GENOMEDIR', help='Directory where genomes to be screened are held')
 required.add_argument('--output', metavar='OUTPUT', help="Directory to store results and intermediate files")
 required.add_argument('--markers_dir', metavar='MARKERDIR', help="Directory where custom markers are held")
 required.add_argument('--markers_list', metavar='MARKERLIST', help="Ordered list of markers to run custom search on")
-optional.add_argument('--summary', metavar='OUTFILE', default='custom-markers-results.csv', help='Output statistics of custom marker searches in .csv format')
-optional.add_argument('--heatmap', metavar='HEATOUT', default='metabolic-summary-results-heatmap.pdf', help="Summary heatmap of metabolic markers in PDF format. If you provide a custom name, it must end in .pdf" )
 required.add_argument('--metadata', metavar='METADATA', help='Metadata file with taxonomical classifications or groups associated with genome file names')
-optional.add_argument('--aggregate', metavar='AGG', default='OFF', help="Aggregate metadata names by group = ON, visualize each genome individually = OFF" )
-optional.add_argument('--kofam', metavar='KOFAM', help='Path to KofamKOALA description list with threshold cutoff scores to use with HMM profiles')
-optional.add_argument("--ko_list", metavar='KOLIST', help="Point to location of the KofamKoala ko_list file if using the KofamKOALA KEGG HMMs")
-optional.add_argument("--plotting", metavar='PLOTTING', default='ON', help="Option to turn plotting Rscript on or off depending on if you want just the raw statistics to perform your own plotting, or keep the default plotting settings. You must have the Rscript make-heatmap.R in your path or in the current working directory. Options= ON,OFF.")
 
+# optional
+optional.add_argument('--summary', metavar='OUTFILE', default='custom-markers-results.csv', help='Output statistics of custom marker searches in .csv format')
+optional.add_argument('--heatmap', metavar='HEATOUT', default='custom-markers-results-heatmap.pdf', help="Summary heatmap of metabolic markers in PDF format. If you provide a custom name, it must end in .pdf" )
+
+# kofam options
+kofam.add_argument('--kofam', metavar='KOFAM', help='Path to KofamKOALA description list with threshold cutoff scores to use with HMM profiles')
+kofam.add_argument("--ko_list", metavar='KOLIST', help="Point to location of the KofamKoala ko_list file if using the KofamKOALA KEGG HMMs")
+
+# plotting options
+plotting.add_argument('--aggregate', metavar='AGG', default='OFF', help="Aggregate metadata names by group = ON, visualize each genome individually = OFF" )
+plotting.add_argument("--plotting", metavar='PLOTTING', default='ON', help="Option to turn plotting Rscript on or off depending on if you want just the raw statistics to perform your own plotting, or keep the default plotting settings. You must have the Rscript make-heatmap.R in your path or in the current working directory. By default option is ON. Options= ON,OFF.")
+plotting.add_argument("--ordering", metavar='ORDER', default='OFF', help="Turn ON or OFF to control custom ordering of rows in heatmap. By default is OFF to list in alphabetical ordering.")
+plotting.add_argument("--group_list", metavar='GROUPS', help="Provide .txt file of ordering of groups if turn the aggregating option on to list the rows in custom order instead of the default alphabetical ordering.")
 
 # check for required installed dependencies
 # prodigal
@@ -75,6 +86,8 @@ out_genomes = OUTPUT + "/genomes"
 KOFAM = args.kofam
 KO_LIST = args.ko_list
 PLOTTING = args.plotting
+ORDER = args.ordering
+GROUPS = args.group_list
 
 # check if directory exists
 if os.path.isdir(OUTPUT) == True:
@@ -234,8 +247,16 @@ if PLOTTING == 'ON':
     FIGOUT = args.heatmap
     AGG = args.aggregate
     CUSTOM = str('CUSTOM')
-    plot_cmd = ['Rscript','make-heatmap.R', out_stats, METADATA, AGG, FIGOUT, CUSTOM]
-    subprocess.call(plot_cmd, stdout=FNULL)
+    if ORDER == 'OFF':
+        plot_cmd = ['Rscript','make-heatmap.R', out_stats, METADATA, AGG, FIGOUT, CUSTOM, ORDER]
+        subprocess.call(plot_cmd, stdout=FNULL)
+    elif ORDER == 'ON': 
+        if os.path.exists(GROUPS) == False:
+            print("You have opted to list rows in custom order, but have not provided a groups list.")
+            sys.exit()
+        else:
+            plot_cmd = ['Rscript','make-heatmap.R', out_stats, METADATA, AGG, FIGOUT, CUSTOM, ORDER, GROUPS]
+            subprocess.call(plot_cmd, stdout=FNULL)
 elif PLOTTING == 'OFF':
     pass
 
