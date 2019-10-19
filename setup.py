@@ -5,7 +5,7 @@ with open('requirements.txt') as f:
     requirements= f.readlines()
 
 setup(name='metabolisHMM',
-version=4.1,
+version=1.4,
 description='Constructing phylogenies and performing functional annotations with HMM markers',
 url='https://github.com/elizabethmcd/metabolisHMM',
 author='Elizabeth McDaniel',

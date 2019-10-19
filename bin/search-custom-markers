@@ -66,7 +66,7 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 # version to print
-VERSION = '4.1.0'
+VERSION = '1.4.0'
 
 # Beginning message
 print('')
@@ -88,10 +88,22 @@ KO_LIST = args.ko_list
 PLOTTING = args.plotting
 ORDER = args.ordering
 GROUPS = args.group_list
+MARKER_DIR = args.markers_dir
+MARKERS_FILE = args.markers_list
 
 # check if directory exists
 if os.path.isdir(OUTPUT) == True:
     print("Directory "+ OUTPUT +" already exists! Please create different directory or remove the existing one.")
+    sys.exit()
+
+# check if directory of custom markers exists
+if os.path.isdir(MARKER_DIR) == True:
+    pass
+    if os.path.exists(MARKERS_FILE) == False:
+        print("You have not provided a list of the custom markers you would like run, and the order to put them in the heatmap. Please fix this.")
+        sys.exit()
+else:
+    print("Directory for running custom HMM search was not provided. Please fix this.")
     sys.exit()
 
 # if kofam argument turned on, check if the corresponding ko_list metadata is provided for getting TC scores from
@@ -124,8 +136,6 @@ os.makedirs(out_genomes)
 genomes = glob.glob(GENOMEFILES)
 
 # point to directory where markers are, and only run on specific markers (in case want run on a select subset in a larger directory, such as the KofamKOALA database)
-MARKER_DIR = args.markers_dir
-MARKERS_FILE = args.markers_list
 with open(MARKERS_FILE) as f:
     markers = f.read().splitlines()
 FNULL = open(os.devnull, 'w')

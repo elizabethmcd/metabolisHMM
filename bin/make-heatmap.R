@@ -164,7 +164,7 @@ make.ordered.heatmap <- function(stats_table, file.path, heatmap.option, groups.
     colnames(hydrogen) <- c("group", "FeFe I", "FeFe II", "Group I", "Group IIA", "Group IIB", "Group IIIA", "Group IIIB", "Group IIIC", "Group IIID", "Group IV")
     # individual melted dfs and plots
     # carbon
-    carbon_melted <- melt(carbon, id.vars="group") %>% mutate(group=factor(group), group = factor(group, levels = levels = rev(as.factor(groups))))
+    carbon_melted <- melt(carbon, id.vars="group") %>% mutate(group=factor(group), group = factor(group, levels = rev(as.factor(groups))))
     carbon_plot <- carbon_melted %>% ggplot(aes(x=variable, y=(group), fill=value)) + geom_tile(color='black',size=0.5,aes(width=1, height=1)) + coord_fixed() +  scale_fill_gradient(low="gray92", high="brown4") + theme(panel.grid = element_blank(), panel.border = element_blank(), plot.margin = unit(c(0, 0, 0, 0), "cm"))
     carbon_plot_formatted <- carbon_plot + scale_x_discrete(position="top", expand=c(0,0)) + theme(axis.text.x.top=element_text(angle=85, hjust=0, face="italic"), axis.ticks.x=element_blank(), axis.ticks.y=element_blank()) + labs(x="Carbon", y=NULL) +  scale_y_discrete(expand=c(0,0))
     carbon_clean <- carbon_plot_formatted + theme(legend.position="none")

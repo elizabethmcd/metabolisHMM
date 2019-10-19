@@ -22,14 +22,22 @@ parser = argparse.ArgumentParser(description = "Create a summary of metabolic ma
 parser._action_groups.pop()
 required = parser.add_argument_group("required arguments")
 optional = parser.add_argument_group("optional arguments")
+plotting = parser.add_argument_group("plotting arguments")
+
+# required
 required.add_argument('--input', metavar='GENOMEDIR', help='Directory where genomes to be screened are held')
 required.add_argument('--output', metavar='OUTPUT', help="Directory to store results and intermediate files")
+required.add_argument('--metadata', metavar='METADATA', help='Metadata file with taxonomical classifications or groups associated with genome file names. Needs to be a .csv file with the genome/filename (everything before .fna) and the group name.')
+
+# optional
 optional.add_argument('--summary', metavar='OUTFILE', default="raw-metabolic-summary-results.csv", help="Summary file of metabolic marker statistics in CSV format")
 optional.add_argument('--heatmap', metavar='HEATOUT', default='metabolic-summary-results-heatmap.pdf', help="Summary heatmap of metabolic markers in PDF format. If you provide a custom name, it must end in .pdf" )
-required.add_argument('--metadata', metavar='METADATA', help='Metadata file with taxonomical classifications or groups associated with genome file names. Needs to be a .csv file with the genome/filename (everything before .fna) and the group name.')
+
+# plotting
 optional.add_argument('--aggregate', metavar='AGG', default='OFF', help="Aggregate metadata names by group = ON, visualize each genome individually = OFF" )
 optional.add_argument("--plotting", metavar='PLOTTING', default='ON', help="Option to turn plotting Rscript on or off depending on if you want just the raw statistics to perform your own plotting, or keep the default plotting settings. You must have the Rscript make-heatmap.R in your path or in the current working directory. Options= ON,OFF.")
-
+plotting.add_argument("--ordering", metavar='ORDER', default='OFF', help="Turn ON or OFF to control custom ordering of rows in heatmap. By default is OFF to list in alphabetical ordering.")
+plotting.add_argument("--group_list", metavar='GROUPS', help="Provide .txt file of ordering of groups if turn the aggregating option on to list the rows in custom order instead of the default alphabetical ordering.")
 
 # check for required installed dependencies
 # prodigal
@@ -51,7 +59,7 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 # version to print
-VERSION = '4.1.0'
+VERSION = '1.4.0'
 
 # Beginning message
 print('')
