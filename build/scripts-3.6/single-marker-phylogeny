@@ -1,4 +1,4 @@
-#!/Users/emcdaniel/anaconda3/bin/python3 
+#!python 
 
 ###############################################################
 # metabolisHMM - A tool for exploring and visualizing the distribution and evolutionary histories of metabolic markers
@@ -260,8 +260,9 @@ fastas = glob.glob(prots)
 for fasta in fastas:
     outname = os.path.basename(fasta).replace(".faa", "").strip().splitlines()[0]
     output= OUTPUT + "/results/"+outname+".aln"
-    musc_cmd = ["mafft","-quiet",fasta,">",output]
-    subprocess.call(musc_cmd)
+    mafft_cmd = "mafft --quiet "
+    mafft_cmd += fasta+" > "+output
+    os.system(mafft_cmd)
 
 # Make tree 
 if PHYTOOL == 'fastree':

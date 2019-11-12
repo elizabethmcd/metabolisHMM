@@ -1,3 +1,4 @@
+*.icloud
 metabolic_markers/
 ribosomal_markers/
 *.pyc

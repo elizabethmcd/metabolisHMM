@@ -1,4 +1,4 @@
-#!/Users/emcdaniel/anaconda3/bin/python3 
+#!python 
 
 ###############################################################
 # metabolisHMM - A tool for exploring and visualizing the distribution and evolutionary histories of metabolic markers
@@ -224,9 +224,9 @@ reordered_cols = ['ndma_methanol_dehydrogenase_TIGR04266',
 'codh_catalytic_TIGR01702',
 'acetate_citrate_lyase_aclA',
 'acetate_citrate_lyase_aclB',
-'nifA_Mo_TIGR01282',
-'nifB_Mo_TIGR01286',
+'nifD_TIGR01282',
 'nifH_TIGR01287',
+'nifK_TIGR01286',
 'nitrite_oxidoreductase_nxrA',
 'nitrite_oxidoreductase_nxrB',
 'napA_TIGR01706',
