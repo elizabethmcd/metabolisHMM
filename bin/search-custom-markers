@@ -10,6 +10,11 @@
 
 import os, sys, glob, argparse, subprocess
 import pandas as pd 
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+matplotlib.style.use('ggplot')
+import seaborn as sns
 from distutils.spawn import find_executable
 from Bio import BiopythonExperimentalWarning
 import warnings
@@ -255,18 +260,91 @@ if PLOTTING == 'ON':
     print("Plotting results...")
     METADATA = args.metadata
     FIGOUT = args.heatmap
+    FIGPATH = OUTPUT + "/results/" + FIGOUT
     AGG = args.aggregate
-    CUSTOM = str('CUSTOM')
-    if ORDER == 'OFF':
-        plot_cmd = ['Rscript','make-heatmap.R', out_stats, METADATA, AGG, FIGOUT, CUSTOM, ORDER]
-        subprocess.call(plot_cmd, stdout=FNULL)
-    elif ORDER == 'ON': 
-        if os.path.exists(GROUPS) == False:
-            print("You have opted to list rows in custom order, but have not provided a groups list.")
-            sys.exit()
-        else:
-            plot_cmd = ['Rscript','make-heatmap.R', out_stats, METADATA, AGG, FIGOUT, CUSTOM, ORDER, GROUPS]
-            subprocess.call(plot_cmd, stdout=FNULL)
+    # cleaned stats file
+    clean = pd.read_csv(out_stats)
+    clean.columns.values[0] = "genome"
+    clean.set_index("genome", inplace=True)
+    clean[clean>1] = 1
+    out_clean = OUTPUT + "/results/cleaned-matrix.csv"
+    clean.to_csv(out_clean)
+    if AGG == 'OFF':
+        if ORDER == 'OFF':
+            sns.set(font_scale=2)
+            fig, ax = plt.subplots(1, 1, figsize = (25, 15), dpi=300)
+            xticks = clean.columns
+            plot=sns.heatmap(clean, cmap="viridis",xticklabels=xticks, square=True, linewidths=1, linecolor='black', cbar=True, cbar_kws={"shrink": .50})
+            plot.xaxis.tick_top()
+            plot.xaxis.set_label_position('top')
+            ax.set_ylabel('')
+            plot.set_xticklabels(plot.get_xticklabels(), rotation=80)
+            plot.figure.savefig(FIGPATH)
+        elif ORDER == 'ON':
+            if os.path.exists(GROUPS) == False:
+                print("You have opted to list rows in custom order, but have not provided a groups list.")
+                sys.exit()
+            else: 
+                rows = []
+                with open(METADATA) as f:
+                    files = f.read().splitlines()
+                    for file in files:
+                        file = os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
+                        rows.append(file)
+                clean.reindex(axis="index", level=0, labels=rows)
+                sns.set(font_scale=2)
+                fig, ax = plt.subplots(1, 1, figsize = (25, 15), dpi=300)
+                xticks = clean.columns
+                plot=sns.heatmap(clean, cmap="viridis",xticklabels=xticks, square=True, linewidths=1, linecolor='black', cbar=True, cbar_kws={"shrink": .50})
+                plot.xaxis.tick_top()
+                plot.xaxis.set_label_position('top')
+                ax.set_ylabel('')
+                plot.set_xticklabels(plot.get_xticklabels(), rotation=80)
+                plot.figure.savefig(FIGPATH)
+    elif AGG == 'ON':
+        if ORDER == 'OFF':
+            # merge with metadata
+            metadata = pd.read_csv(METADATA, names=['genome', 'group'])
+            merged = metadata.merge(clean, left_on="genome", right_on="genome")
+            drop = merged.drop('genome', 1)
+            agg = drop.groupby(['group'], as_index=False).mean()
+            agg.set_index("group", inplace=True)
+            sns.set(font_scale=2)
+            fig, ax = plt.subplots(1, 1, figsize = (25, 15), dpi=300)
+            xticks = agg.columns
+            plot=sns.heatmap(agg, cmap="viridis",xticklabels=xticks, square=True, linewidths=1, linecolor='black', cbar=True, cbar_kws={"shrink": .50})
+            plot.xaxis.tick_top()
+            plot.xaxis.set_label_position('top')
+            ax.set_ylabel('')
+            plot.set_xticklabels(plot.get_xticklabels(), rotation=80)
+            plot.figure.savefig(FIGPATH)
+        elif ORDER == 'ON': 
+            if os.path.exists(GROUPS) == False:
+                print("You have opted to list rows in custom order, but have not provided a groups list.")
+                sys.exit()
+            else: 
+                metadata = pd.read_csv(METADATA, names=['genome', 'group'])
+                merged = metadata.merge(clean, left_on="genome", right_on="genome")
+                drop = merged.drop('genome', 1)
+                agg = drop.groupby(['group'], as_index=False).mean()
+                agg.set_index("group", inplace=True)
+                rows = []
+                with open(METADATA) as f:
+                    files = f.read().splitlines()
+                    for file in files:
+                        file = os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
+                        rows.append(file)
+                agg.reindex(axis="index", level=0, labels=rows)
+                sns.set(font_scale=2)
+                fig, ax = plt.subplots(1, 1, figsize = (25, 15), dpi=300)
+                xticks = agg.columns
+                plot=sns.heatmap(agg, cmap="viridis",xticklabels=xticks, square=True, linewidths=1, linecolor='black', cbar=True, cbar_kws={"shrink": .50})
+                plot.xaxis.tick_top()
+                plot.xaxis.set_label_position('top')
+                ax.set_ylabel('')
+                plot.set_xticklabels(plot.get_xticklabels(), rotation=80)
+                plot.figure.savefig(FIGPATH)
+        
 elif PLOTTING == 'OFF':
     pass
 
