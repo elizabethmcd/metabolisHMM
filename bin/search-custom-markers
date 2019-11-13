@@ -126,14 +126,6 @@ if KOFAM == 'ON':
             print("     This does not look like the ko_list file from the KofamKOALA distribution.")
             sys.exit()
 
-# check if Rscript for plotting in current working directory
-if PLOTTING == 'ON':
-    if os.path.exists("make-heatmap.R") == True:
-        pass
-    else:
-        print(" You do not have the Rscript make-heatmap.R in your path or the current working directory to use the plotting functions from. Please fix this.")
-        sys.exit()
-
 # setup directories
 os.makedirs(out_intm)
 os.makedirs(out_results)
@@ -286,7 +278,7 @@ if PLOTTING == 'ON':
                 sys.exit()
             else: 
                 rows = []
-                with open(METADATA) as f:
+                with open(GROUPS) as f:
                     files = f.read().splitlines()
                     for file in files:
                         file = os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
@@ -329,7 +321,7 @@ if PLOTTING == 'ON':
                 agg = drop.groupby(['group'], as_index=False).mean()
                 agg.set_index("group", inplace=True)
                 rows = []
-                with open(METADATA) as f:
+                with open(GROUPS) as f:
                     files = f.read().splitlines()
                     for file in files:
                         file = os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]

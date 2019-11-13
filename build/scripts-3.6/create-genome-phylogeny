@@ -34,10 +34,9 @@ required.add_argument('--domain', metavar='DOMAIN', help='archaea, bacteria, all
 required.add_argument('--phylogeny', metavar='PHY', help='fastree, raxml')
 optional.add_argument('--threads',metavar='THREADS',help='Optional: number of threads for calculating a tree using RAxML. This is not taken into account using Fastree')
 optional.add_argument('--loci', metavar='LOCI', default='12', help='Output genomes with less than x number of loci. By default prints genomes that have less than 12 ribosomal loci markers.')
-optional.add_argument('--metadata', metavar='METADATA', help="Provided .csv formatted metadata file of filenames and corresponding taxonomical or group names")
-metadata.add_argument('--itol_files', metavar='ITOL',help='Option for outputting ITOL formatted metadata files. ON or OFF')
+metadata.add_argument('--metadata', metavar='METADATA',help='Option for outputting ITOL formatted metadata files. ON or OFF')
 metadata.add_argument('--names', metavar='NAMES', help="Provided .csv formatted metadata file of filenames and corresponding taxonomical or group names")
-metadata.add_argument('--itol_output', metavar='ITOL_FILE', help="Output iTOL formatted metadata file for changing leaf labels to taxonomical or group names")
+metadata.add_argument('--itol_file', metavar='ITOL', default="itol_metadata.txt", help="Output iTOL formatted metadata file for changing leaf labels to taxonomical or group names")
 
 # check for required installed dependencies
 # prodigal
@@ -90,9 +89,15 @@ out_intm = OUTPUT + "/out"
 out_results = OUTPUT + "/results"
 out_genomes = OUTPUT + "/genomes"
 METADATA = args.metadata
-ITOL = args.itol_files
 NAMES = args.names
-ITOL_FILE = args.itol_output
+ITOL_FILE = args.itol_file
+
+if PHYTOOL == 'raxml':
+    if find_executable('raxmlHPC-PTHREADS') is not None:
+        pass
+    else:
+        print('You have opted to use raxml for building trees, but do not have the correct executable, raxmlHPC-PTHREADS installed in your path. Please fix this.')
+        sys.exit()
 
 # check if directory exists
 if os.path.isdir(OUTPUT) == True:
@@ -114,7 +119,7 @@ FNULL = open(os.devnull, 'w')
 DEVNULL = open(os.devnull, 'wb')
 
 # if metadata option on, check the names file and itol path provided
-if ITOL == 'ON':
+if METADATA == 'ON':
     if os.path.exists(NAMES) == True:
     # header for itol output
         ITOL_PATH = OUTPUT + "/results/" + ITOL_FILE
@@ -126,7 +131,6 @@ if ITOL == 'ON':
                 OUT_ITOL.write('%s\t%s\n' % (filename, labelname))
 elif METADATA == 'OFF':
     pass
-
 
 
 # different ribosomal markers for archaea/bacteria/all
@@ -287,18 +291,6 @@ elif PHYTOOL == "raxml":
     fileIn=OUTPUT + "/results/"+DOMAIN+"concatenated-ribosomal-alignment-reformatted.fasta"
     raxCmd = "raxmlHPC-PTHREADS -f a -m PROTGAMMAAUTO -p 12345 -x 12345 -# 100 -s "+fileIn+" -T "+THREADS+" -n "+outname
     os.system(raxCmd)
-
-
-# optional metadata and itol output if provided
-METADATA = args.metadata
-
-# header for itol output
-OUT_ITOL = open(args.itol, "w")
-OUT_ITOL.write("LABELS\nSEPARATOR TAB\nDATA\n")
-with open(METADATA, "r") as f:
-    records = f.rstrip()
-    filename, labelname = record.split(',')
-    OUT_ITOL.write('%s\t%s\n')
 
 # end message
 print("Done! Find your results in "+ OUTPUT + "/results/")

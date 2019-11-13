@@ -10,6 +10,12 @@
 
 import os, sys, glob, subprocess, argparse
 import pandas as pd 
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+matplotlib.style.use('ggplot')
+import seaborn as sns
 from distutils.spawn import find_executable
 from Bio import BiopythonExperimentalWarning
 import warnings
@@ -89,14 +95,6 @@ if os.path.isdir(OUTPUT) == True:
 if os.path.isdir("metabolic_markers/") == False:
     print("     The directory of curated metabolic markers could not be found."+"\n"+"     Please either download the markers from https://github.com/elizabethmcd/metabolisHMM/releases/download/v2.0/metabolisHMM_v2.0_markers.tgz and decompress the tarball, or move the directory to where you are running the workflow from.")
     sys.exit()
-
-# check if Rscript for plotting in current working directory
-if PLOTTING == 'ON':
-    if os.path.exists("make-heatmap.R") == True:
-        pass
-    else:
-        print(" You do not have the Rscript make-heatmap.R in your path or the current working directory to use the plotting functions from. Please fix this.")
-        sys.exit()
 
 # make directories
 os.makedirs(out_intm)
@@ -284,13 +282,248 @@ out_stats = OUTPUT + "/results/" + OUTFILE
 df_final.to_csv(out_stats)
 
 if PLOTTING == 'ON':
-    print("Plotting results...")
     METADATA = args.metadata
     FIGOUT = args.heatmap
+    FIGPATH = OUTPUT + "/results/" + FIGOUT
     AGG = args.aggregate
-    CURATED = str('CURATED')
-    plot_cmd = ['Rscript', 'make-heatmap.R', out_stats, METADATA, AGG, FIGOUT, CURATED]
-    subprocess.call(plot_cmd, stdout=FNULL)
+    ORDER = args.ordering
+    GROUPS = args.group_list
+    clean = pd.read_csv(out_stats)
+    clean = pd.read_csv(out_stats)
+    clean.columns.values[0] = "genome"
+    clean.set_index("genome", inplace=True)
+    clean[clean>1] = 1
+    out_clean = OUTPUT + "/results/cleaned-matrix.csv"
+    clean.to_csv(out_clean)
+    clean.reset_index(inplace=True)
+    if AGG == 'OFF':
+        if ORDER == 'OFF':
+            sns.set(font_scale=2)
+            carbon = clean.iloc[:,0:27].copy()
+            carbon.columns = ["genome","MtOH dehy", "madA", "madB", "fdh", "sfh", "sgdh", "smdh", "fae", "fmtF", "mtmc", "fdhA", "fdhB", "fdhC", "coxL", "coxM", "coxS", "rubisco I", "rubisco II", "rubisco III", "rubisco II/III", "rubisco IV", "codhC", "codhD", "codh cat.", "aclA", "aclB"]
+            carbon.set_index("genome", inplace=True)
+            nitrogen = clean.iloc[:, np.r_[0, 27:48]].copy()
+            nitrogen.columns= ["genome","nifD", "nifH", "nifK", "nxrA", "nxrB", "napA", "napB", "narG", "narH", "nrfA", "nrfH", "nirB", "nirD", "nirK", "nirS", "norB", "norC", "nosD", "nosZ", "hzoA", "hzsA"]
+            nitrogen.set_index("genome", inplace=True)
+            sulfur = clean.iloc[:, np.r_[0,48:60]].copy()
+            sulfur.columns= ["genome","fccB", "sqr", "sdo", "aprA", "sat", "dsrA", "dsrB", "dsrD", "phsA", "soxB", "soxC", "soxY"]
+            sulfur.set_index("genome", inplace=True)
+            oxygen = clean.iloc[:, np.r_[0,60:71]].copy()
+            oxygen.columns = ["genome","coxA", "coxB", "ccoN", "ccoO", "ccoP", "cyoA", "cyoD", "cyoE", "cydA", "cydB", "qoxA"]
+            oxygen.set_index("genome", inplace=True)
+            hydrogen = clean.iloc[:, np.r_[0,71:81]].copy()
+            hydrogen.columns = ["genome","FeFe I", "FeFe II", "Group I", "Group IIA", "Group IIB", "Group IIIA", "Group IIIB", "Group IIIC", "Group IIID", "Group IV"]
+            hydrogen.set_index("genome", inplace=True)
+            fig, (ax,ax2,ax3,ax4,ax5) = plt.subplots(ncols=5, figsize = (85, 20))
+            fig.subplots_adjust(wspace=0.01)
+            sns.heatmap(carbon, cmap="Blues", ax=ax, cbar=False, linewidths=1, linecolor='black')
+            sns.heatmap(nitrogen, cmap="Greens", ax=ax2, cbar=False, linewidths=1, linecolor='black')
+            sns.heatmap(sulfur, cmap="Purples", ax=ax3, cbar=False, linewidths=1, linecolor='black')
+            sns.heatmap(oxygen, cmap="Greys", ax=ax4, cbar=False, linewidths=1, linecolor='black')
+            sns.heatmap(hydrogen, cmap="Oranges", ax=ax5, cbar=False, linewidths=1, linecolor='black')
+            ax.xaxis.tick_top()
+            ax.xaxis.set_label_position('top')
+            ax.set_xticklabels(ax.get_xticklabels(), rotation=80)
+            ax2.set_ylabel('')
+            ax2.xaxis.tick_top()
+            ax2.xaxis.set_label_position('top')
+            ax2.set_yticks([])
+            ax2.tick_params(rotation=80)
+            ax3.set_ylabel('')
+            ax3.xaxis.tick_top()
+            ax3.xaxis.set_label_position('top')
+            ax3.set_yticks([])
+            ax3.tick_params(rotation=80)
+            ax4.set_ylabel('')
+            ax4.xaxis.tick_top()
+            ax4.xaxis.set_label_position('top')
+            ax4.set_yticks([])
+            ax4.tick_params(rotation=80)
+            ax5.xaxis.tick_top()
+            ax5.xaxis.set_label_position('top')
+            ax5.set_ylabel('')
+            ax5.set_yticks([])
+            ax5.tick_params(rotation=80)
+            plt.savefig(FIGPATH)
+        elif ORDER == 'ON':
+            if os.path.exists(GROUPS) == False:
+                print("You have opted to list rows in custom order, but have not provided a groups list.")
+                sys.exit()
+            else: 
+                rows = []
+                with open(METADATA) as f:
+                    files = f.read().splitlines()
+                    for file in files:
+                        file = os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
+                        rows.append(file)
+                clean.reindex(axis="index", level=0, labels=rows)
+                clean.reset_index()
+                sns.set(font_scale=2)
+                carbon = clean.iloc[:,0:27].copy()
+                carbon.columns = ["group","MtOH dehy", "madA", "madB", "fdh", "sfh", "sgdh", "smdh", "fae", "fmtF", "mtmc", "fdhA", "fdhB", "fdhC", "coxL", "coxM", "coxS", "rubisco I", "rubisco II", "rubisco III", "rubisco II/III", "rubisco IV", "codhC", "codhD", "codh cat.", "aclA", "aclB"]
+                carbon.set_index("group", inplace=True)
+                nitrogen = clean.iloc[:, np.r_[0, 27:48]].copy()
+                nitrogen.columns= ["group","nifD", "nifH", "nifK", "nxrA", "nxrB", "napA", "napB", "narG", "narH", "nrfA", "nrfH", "nirB", "nirD", "nirK", "nirS", "norB", "norC", "nosD", "nosZ", "hzoA", "hzsA"]
+                nitrogen.set_index("group", inplace=True)
+                sulfur = clean.iloc[:, np.r_[0,48:60]].copy()
+                sulfur.columns= ["group","fccB", "sqr", "sdo", "aprA", "sat", "dsrA", "dsrB", "dsrD", "phsA", "soxB", "soxC", "soxY"]
+                sulfur.set_index("group", inplace=True)
+                oxygen = clean.iloc[:, np.r_[0,60:71]].copy()
+                oxygen.columns = ["group","coxA", "coxB", "ccoN", "ccoO", "ccoP", "cyoA", "cyoD", "cyoE", "cydA", "cydB", "qoxA"]
+                oxygen.set_index("group", inplace=True)
+                hydrogen = clean.iloc[:, np.r_[0,71:81]].copy()
+                hydrogen.columns = ["group","FeFe I", "FeFe II", "Group I", "Group IIA", "Group IIB", "Group IIIA", "Group IIIB", "Group IIIC", "Group IIID", "Group IV"]
+                hydrogen.set_index("group", inplace=True)
+                fig, (ax,ax2,ax3,ax4,ax5) = plt.subplots(ncols=5, figsize = (85, 20))
+                fig.subplots_adjust(wspace=0.01)
+                sns.heatmap(carbon, cmap="Blues", ax=ax, cbar=False, linewidths=1, linecolor='black')
+                sns.heatmap(nitrogen, cmap="Greens", ax=ax2, cbar=False, linewidths=1, linecolor='black')
+                sns.heatmap(sulfur, cmap="Purples", ax=ax3, cbar=False, linewidths=1, linecolor='black')
+                sns.heatmap(oxygen, cmap="Greys", ax=ax4, cbar=False, linewidths=1, linecolor='black')
+                sns.heatmap(hydrogen, cmap="Oranges", ax=ax5, cbar=False, linewidths=1, linecolor='black')
+                ax.xaxis.tick_top()
+                ax.xaxis.set_label_position('top')
+                ax.set_xticklabels(ax.get_xticklabels(), rotation=80)
+                ax2.set_ylabel('')
+                ax2.xaxis.tick_top()
+                ax2.xaxis.set_label_position('top')
+                ax2.set_yticks([])
+                ax2.tick_params(rotation=80)
+                ax3.set_ylabel('')
+                ax3.xaxis.tick_top()
+                ax3.xaxis.set_label_position('top')
+                ax3.set_yticks([])
+                ax3.tick_params(rotation=80)
+                ax4.set_ylabel('')
+                ax4.xaxis.tick_top()
+                ax4.xaxis.set_label_position('top')
+                ax4.set_yticks([])
+                ax4.tick_params(rotation=80)
+                ax5.xaxis.tick_top()
+                ax5.xaxis.set_label_position('top')
+                ax5.set_ylabel('')
+                ax5.set_yticks([])
+                ax5.tick_params(rotation=80)
+                plt.savefig(FIGPATH)
+    elif AGG == 'ON':
+        if ORDER == 'OFF':
+            metadata = pd.read_csv(METADATA, names=['genome', 'group'])
+            merged = metadata.merge(clean, left_on="genome", right_on="genome")
+            drop = merged.drop('genome', 1)
+            agg = drop.groupby(['group'], as_index=False).mean()
+            sns.set(font_scale=3)
+            carbon = agg.iloc[:,0:27].copy()
+            carbon.columns = ["group","MtOH dehy", "madA", "madB", "fdh", "sfh", "sgdh", "smdh", "fae", "fmtF", "mtmc", "fdhA", "fdhB", "fdhC", "coxL", "coxM", "coxS", "rubisco I", "rubisco II", "rubisco III", "rubisco II/III", "rubisco IV", "codhC", "codhD", "codh cat.", "aclA", "aclB"]
+            carbon.set_index("group", inplace=True)
+            nitrogen = agg.iloc[:, np.r_[0, 27:48]].copy()
+            nitrogen.columns= ["group","nifD", "nifH", "nifK", "nxrA", "nxrB", "napA", "napB", "narG", "narH", "nrfA", "nrfH", "nirB", "nirD", "nirK", "nirS", "norB", "norC", "nosD", "nosZ", "hzoA", "hzsA"]
+            nitrogen.set_index("group", inplace=True)
+            sulfur = agg.iloc[:, np.r_[0,48:60]].copy()
+            sulfur.columns= ["group","fccB", "sqr", "sdo", "aprA", "sat", "dsrA", "dsrB", "dsrD", "phsA", "soxB", "soxC", "soxY"]
+            sulfur.set_index("group", inplace=True)
+            oxygen = agg.iloc[:, np.r_[0,60:71]].copy()
+            oxygen.columns = ["group","coxA", "coxB", "ccoN", "ccoO", "ccoP", "cyoA", "cyoD", "cyoE", "cydA", "cydB", "qoxA"]
+            oxygen.set_index("group", inplace=True)
+            hydrogen = agg.iloc[:, np.r_[0,71:81]].copy()
+            hydrogen.columns = ["group","FeFe I", "FeFe II", "Group I", "Group IIA", "Group IIB", "Group IIIA", "Group IIIB", "Group IIIC", "Group IIID", "Group IV"]
+            hydrogen.set_index("group", inplace=True)
+            fig, (ax,ax2,ax3,ax4,ax5) = plt.subplots(ncols=5, figsize = (85, 20))
+            fig.subplots_adjust(wspace=0.01)
+            sns.heatmap(carbon, cmap="Blues", ax=ax, cbar=False, linewidths=1, linecolor='black')
+            sns.heatmap(nitrogen, cmap="Greens", ax=ax2, cbar=False, linewidths=1, linecolor='black')
+            sns.heatmap(sulfur, cmap="Purples", ax=ax3, cbar=False, linewidths=1, linecolor='black')
+            sns.heatmap(oxygen, cmap="Greys", ax=ax4, cbar=False, linewidths=1, linecolor='black')
+            sns.heatmap(hydrogen, cmap="Oranges", ax=ax5, cbar=False, linewidths=1, linecolor='black')
+            ax.xaxis.tick_top()
+            ax.xaxis.set_label_position('top')
+            ax.set_xticklabels(ax.get_xticklabels(), rotation=80)
+            ax2.set_ylabel('')
+            ax2.xaxis.tick_top()
+            ax2.xaxis.set_label_position('top')
+            ax2.set_yticks([])
+            ax2.tick_params(rotation=80)
+            ax3.set_ylabel('')
+            ax3.xaxis.tick_top()
+            ax3.xaxis.set_label_position('top')
+            ax3.set_yticks([])
+            ax3.tick_params(rotation=80)
+            ax4.set_ylabel('')
+            ax4.xaxis.tick_top()
+            ax4.xaxis.set_label_position('top')
+            ax4.set_yticks([])
+            ax4.tick_params(rotation=80)
+            ax5.xaxis.tick_top()
+            ax5.xaxis.set_label_position('top')
+            ax5.set_ylabel('')
+            ax5.set_yticks([])
+            ax5.tick_params(rotation=80)
+            plt.savefig(FIGPATH)
+        elif ORDER == 'ON':
+            if os.path.exists(GROUPS) == False:
+                print("You have opted to list rows in custom order, but have not provided a groups list.")
+                sys.exit()
+            else: 
+                metadata = pd.read_csv(METADATA, names=['genome', 'group'])
+                merged = metadata.merge(clean, left_on="genome", right_on="genome")
+                drop = merged.drop('genome', 1)
+                agg = drop.groupby(['group'], as_index=False).mean()
+                agg.set_index("group", inplace=True)
+                rows = []
+                with open(GROUPS) as f:
+                    files = f.read().splitlines()
+                    for file in files:
+                        file = os.path.basename(marker).replace(".hmm", "").strip().splitlines()[0]
+                        rows.append(file)
+                agg.reindex(axis="index", level=0, labels=rows)
+                agg.reset_index()
+                sns.set(font_scale=3)
+                carbon = agg.iloc[:,0:27].copy()
+                carbon.columns = ["group","MtOH dehy", "madA", "madB", "fdh", "sfh", "sgdh", "smdh", "fae", "fmtF", "mtmc", "fdhA", "fdhB", "fdhC", "coxL", "coxM", "coxS", "rubisco I", "rubisco II", "rubisco III", "rubisco II/III", "rubisco IV", "codhC", "codhD", "codh cat.", "aclA", "aclB"]
+                carbon.set_index("group", inplace=True)
+                nitrogen = agg.iloc[:, np.r_[0, 27:48]].copy()
+                nitrogen.columns= ["group","nifD", "nifH", "nifK", "nxrA", "nxrB", "napA", "napB", "narG", "narH", "nrfA", "nrfH", "nirB", "nirD", "nirK", "nirS", "norB", "norC", "nosD", "nosZ", "hzoA", "hzsA"]
+                nitrogen.set_index("group", inplace=True)
+                sulfur = agg.iloc[:, np.r_[0,48:60]].copy()
+                sulfur.columns= ["group","fccB", "sqr", "sdo", "aprA", "sat", "dsrA", "dsrB", "dsrD", "phsA", "soxB", "soxC", "soxY"]
+                sulfur.set_index("group", inplace=True)
+                oxygen = agg.iloc[:, np.r_[0,60:71]].copy()
+                oxygen.columns = ["group","coxA", "coxB", "ccoN", "ccoO", "ccoP", "cyoA", "cyoD", "cyoE", "cydA", "cydB", "qoxA"]
+                oxygen.set_index("group", inplace=True)
+                hydrogen = agg.iloc[:, np.r_[0,71:81]].copy()
+                hydrogen.columns = ["group","FeFe I", "FeFe II", "Group I", "Group IIA", "Group IIB", "Group IIIA", "Group IIIB", "Group IIIC", "Group IIID", "Group IV"]
+                hydrogen.set_index("group", inplace=True)
+                fig, (ax,ax2,ax3,ax4,ax5) = plt.subplots(ncols=5, figsize = (85, 20))
+                fig.subplots_adjust(wspace=0.01)
+                sns.heatmap(carbon, cmap="Blues", ax=ax, cbar=False, linewidths=1, linecolor='black')
+                sns.heatmap(nitrogen, cmap="Greens", ax=ax2, cbar=False, linewidths=1, linecolor='black')
+                sns.heatmap(sulfur, cmap="Purples", ax=ax3, cbar=False, linewidths=1, linecolor='black')
+                sns.heatmap(oxygen, cmap="Greys", ax=ax4, cbar=False, linewidths=1, linecolor='black')
+                sns.heatmap(hydrogen, cmap="Oranges", ax=ax5, cbar=False, linewidths=1, linecolor='black')
+                ax.xaxis.tick_top()
+                ax.xaxis.set_label_position('top')
+                ax.set_xticklabels(ax.get_xticklabels(), rotation=80)
+                ax2.set_ylabel('')
+                ax2.xaxis.tick_top()
+                ax2.xaxis.set_label_position('top')
+                ax2.set_yticks([])
+                ax2.tick_params(rotation=80)
+                ax3.set_ylabel('')
+                ax3.xaxis.tick_top()
+                ax3.xaxis.set_label_position('top')
+                ax3.set_yticks([])
+                ax3.tick_params(rotation=80)
+                ax4.set_ylabel('')
+                ax4.xaxis.tick_top()
+                ax4.xaxis.set_label_position('top')
+                ax4.set_yticks([])
+                ax4.tick_params(rotation=80)
+                ax5.xaxis.tick_top()
+                ax5.xaxis.set_label_position('top')
+                ax5.set_ylabel('')
+                ax5.set_yticks([])
+                ax5.tick_params(rotation=80)
+                plt.savefig(FIGPATH)
+
 elif PLOTTING == 'OFF':
     pass
 
