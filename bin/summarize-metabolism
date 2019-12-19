@@ -82,7 +82,7 @@ out_intm = OUTPUT + "/out"
 out_results = OUTPUT + "/results"
 out_genomes = OUTPUT + "/genomes"
 OUTFILE = args.summary
-markers=glob.glob("metabolic_markers/*.hmm")
+markers=glob.glob("curated_markers/metabolic_markers/*.hmm")
 genomes=glob.glob(GENOMEFILES)
 PLOTTING = args.plotting
 
