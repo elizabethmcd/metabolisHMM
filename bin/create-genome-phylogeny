@@ -1,6 +1,5 @@
 #! /usr/bin/env python3 
 
-
 ###############################################################
 # metabolisHMM - A tool for exploring and visualizing the distribution and evolutionary histories of metabolic markers
 # create-genome-phylogeny: to create a phylogeny based on ribosomal proteins

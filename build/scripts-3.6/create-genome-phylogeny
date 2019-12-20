@@ -1,6 +1,5 @@
 #!python 
 
-
 ###############################################################
 # metabolisHMM - A tool for exploring and visualizing the distribution and evolutionary histories of metabolic markers
 # create-genome-phylogeny: to create a phylogeny based on ribosomal proteins
@@ -23,14 +22,14 @@ from Bio.SeqRecord import SeqRecord
 from collections import defaultdict, Counter
 
 # Arguments
-parser = argparse.ArgumentParser(description = "Create ribosomal phylogenies using specific ribosomal markers for archaea and/or bacteria")
+parser = argparse.ArgumentParser(description = "Create ribosomal phylogenies using specific ribosomal markers for archaea or bacteria")
 parser._action_groups.pop()
 required = parser.add_argument_group("required arguments")
 optional = parser.add_argument_group("optional arguments")
 metadata = parser.add_argument_group("metadata output files for ITOL")
 required.add_argument('--input', metavar='INPUT', help='Directory where genomes to be screened are held')
 required.add_argument('--output', metavar='OUTPUT', help='Directory to store results and intermediate files')
-required.add_argument('--domain', metavar='DOMAIN', help='archaea, bacteria, all')
+required.add_argument('--domain', metavar='DOMAIN', help='archaea, bacteria')
 required.add_argument('--phylogeny', metavar='PHY', help='fastree, raxml')
 optional.add_argument('--threads',metavar='THREADS',help='Optional: number of threads for calculating a tree using RAxML. This is not taken into account using Fastree')
 optional.add_argument('--loci', metavar='LOCI', default='12', help='Output genomes with less than x number of loci. By default prints genomes that have less than 12 ribosomal loci markers.')
@@ -105,7 +104,7 @@ if os.path.isdir(OUTPUT) == True:
     sys.exit()
 
 # check for ribosomal markers directory
-if os.path.isdir("ribosomal_markers/") == False:
+if os.path.isdir("curated_markers/ribosomal_markers/") == False:
     print("     The ribosomal markers directory could not be found."+"\n"+"     Please either download the markers from https://github.com/elizabethmcd/metabolisHMM/releases/download/v2.0/metabolisHMM_v2.0_markers.tgz and decompress the tarball, or move the directory to where you are running the workflow from.")
     sys.exit()
 
@@ -134,16 +133,14 @@ elif METADATA == 'OFF':
 
 
 # different ribosomal markers for archaea/bacteria/all
-bacteria_list = ['rpL14','rpL15','rpL16','rpL18','rpL22','rpL24','rpL2','rpL3','rpL4','rpL5','rpL6','rpS10','rpS17','rpS19','rpS3','rpS8']
-archaea_list = ['rpL14','rpL15','rpL18','rpL22','rpL24','rpL2','rpL3','rpL4','rpL5','rpL6','rpS17','rpS19','rpS3','rpS8']
-all_list = ['rpL14','rpL15','rpL18','rpL22','rpL24','rpL2', 'rpL3','rpL4','rpL5','rpL6','rpS17','rpS19','rpS3','rpS8']
+bacteria_list = ['rpL14_bact','rpL15_bact','rpL16_bact','rpL18_bact','rpL22_bact','rpL24_bact','rpL2_bact','rpL3_bact','rpL4_bact','rpL5_bact','rpL6_bact','rpS10_bact','rpS17_bact','rpS19_bact','rpS3_bact','rpS8_bact']
+archaea_list = ['rpL14_arch','rpL15_arch','rpL16_arch','rpL18_arch','rpL22_arch','rpL24_arch','rpL2_arch','rpL3_arch','rpL4_arch','rpL5_arch','rpL6_arch', 'rpS10_arch','rpS17_arch','rpS19_arch','rpS3_arch','rpS8_arch']
+
 
 if DOMAIN == 'archaea':    
     prot_list=archaea_list
 elif DOMAIN == 'bacteria':
     prot_list=bacteria_list
-elif DOMAIN == 'all': 
-    prot_list=all_list
 
 
 # if .fna predict CDS and reformat header names because prodigal makes them stupid
@@ -187,7 +184,7 @@ for genome in reformatted_genomes:
     dir=name
     os.makedirs(OUTPUT+"/out/"+dir)
     for prot in prot_list:
-        marker ="ribosomal_markers/"+prot+"_bact.hmm"
+        marker ="curated_markers/ribosomal_markers/"+prot+".hmm"
         outname= OUTPUT + "/out/"+dir+"/"+name + "-" + prot + ".out"
         cmd = ["hmmsearch", "--tblout="+outname, marker, genome]
         subprocess.call(cmd, stdout=FNULL)

@@ -38,7 +38,7 @@ optional.add_argument("--threads",metavar='THREADS',help="number of threads for 
 optional.add_argument("--kofam", metavar='KOFAM', help="Use KEGG HMMs from the KofamKOALA set. Options = ON or OFF")
 optional.add_argument("--ko_list", metavar='KOLIST', help="Point to location of the KofamKoala ko_list file if using the KofamKOALA KEGG HMMs")
 ribosomal.add_argument("--ribo_tree", metavar='RIBO', default='OFF', help="Make corresponding ribosomal phylogeny of genomes containing hits of the provided single marker. " )
-ribosomal.add_argument("--domain", metavar='DOMAIN', help="If constructing corresponding ribosomal tree, select the domain for which your hits belong to. Options: bacteria, archaea, all")
+ribosomal.add_argument("--domain", metavar='DOMAIN', help="If constructing corresponding ribosomal tree, select the domain for which your hits belong to. Options: bacteria, archaea")
 ribosomal.add_argument('--loci', metavar='LOCI', default='12', help='Output genomes with less than x number of loci. By default prints genomes that have less than 12 ribosomal loci markers.')
 metadata.add_argument('--metadata', metavar='METADATA',help='Option for outputting ITOL formatted metadata files. ON or OFF')
 metadata.add_argument('--names', metavar='NAMES', help="Provided .csv formatted metadata file of filenames and corresponding taxonomical or group names")
@@ -284,15 +284,12 @@ elif PHYTOOL == "raxml":
 
 # Corresponding ribosomal tree of hits and options
 # lists
-bacteria_list = ['rpL14','rpL15','rpL16','rpL18','rpL22','rpL24','rpL2','rpL3','rpL4','rpL5','rpL6','rpS10','rpS17','rpS19','rpS3','rpS8']
-archaea_list = ['rpL14','rpL15','rpL18','rpL22','rpL24','rpL2','rpL3','rpL4','rpL5','rpL6','rpS17','rpS19','rpS3','rpS8']
-all_list = ['rpL14','rpL15','rpL18','rpL22','rpL24','rpL2', 'rpL3','rpL4','rpL5','rpL6','rpS17','rpS19','rpS3','rpS8']
+bacteria_list = ['rpL14_bact','rpL15_bact','rpL16_bact','rpL18_bact','rpL22_bact','rpL24_bact','rpL2_bact','rpL3_bact','rpL4_bact','rpL5_bact','rpL6_bact','rpS10_bact','rpS17_bact','rpS19_bact','rpS3_bact','rpS8_bact']
+archaea_list = ['rpL14_arch','rpL15_arch','rpL16_arch','rpL18_arch','rpL22_arch','rpL24_arch','rpL2_arch','rpL3_arch','rpL4_arch','rpL5_arch','rpL6_arch', 'rpS10_arch','rpS17_arch','rpS19_arch','rpS3_arch','rpS8_arch']
 if DOMAIN == 'archaea':    
     prot_list=archaea_list
 elif DOMAIN == 'bacteria':
     prot_list=bacteria_list
-elif DOMAIN == 'all': 
-    prot_list=all_list
 # runs phylogeny on specific hits of single marker
 if RIBO == 'ON':
     print("Making corresponding ribosomal phylogeny of single marker hits...")
@@ -306,7 +303,7 @@ if RIBO == 'ON':
         genome = OUTPUT + "/genomes/"+hit+".reformatted.faa"
         os.makedirs(OUTPUT+"/ribo_out/"+hit)
         for prot in prot_list:
-            marker ="ribosomal_markers/"+prot+"_bact.hmm"
+            marker ="curated_markers/ribosomal_markers/"+prot+".hmm"
             outname= OUTPUT + "/ribo_out/"+hit+"/"+hit + "-" + prot + ".out"
             cmd = ["hmmsearch", "--tblout="+outname, marker, genome]
             subprocess.call(cmd, stdout=FNULL)
