@@ -65,7 +65,7 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 # version to print
-VERSION = '1.4.0'
+VERSION = '2.1'
 
 # Beginning message
 print('')
@@ -92,7 +92,7 @@ if os.path.isdir(OUTPUT) == True:
     sys.exit()
 
 # check for curated metabolic markers direcotry
-if os.path.isdir("metabolic_markers/") == False:
+if os.path.isdir("curated_markers/metabolic_markers/") == False:
     print("     The directory of curated metabolic markers could not be found."+"\n"+"     Please either download the markers from https://github.com/elizabethmcd/metabolisHMM/releases/download/v2.0/metabolisHMM_v2.0_markers.tgz and decompress the tarball, or move the directory to where you are running the workflow from.")
     sys.exit()
 
@@ -176,7 +176,7 @@ existing_rows = df.index
 all_cols=[]
 absent_cols=[]
 existing_markers = df.columns
-markers=glob.glob("metabolic_markers/*.hmm")
+markers=glob.glob("curated_markers/metabolic_markers/*.hmm")
 # check for missing rows
 for genome in reformatted_genomes:
     name=os.path.basename(genome).replace(".reformatted.faa","")
@@ -196,86 +196,7 @@ df_all = df_rows.reindex(columns=all_cols)
 df_all.fillna(0, inplace=True)
 
 # open list in data/metabolic-markers.txt to reorder by function
-reordered_cols = ['ndma_methanol_dehydrogenase_TIGR04266',
-'madA_TIGR02659',
-'madB_TIGR02658',
-'fdh_thiol_id_TIGR02819',
-'sfh_TIGR02821',
-'sgdh_TIGR02818',
-'smdh_TIGR03451',
-'fae_TIGR03126',
-'fmtf_TIGR03119',
-'mtmc_TIGR03120',
-'fdhA_TIGR01591',
-'fdhB_TIGR01582',
-'fdhC_TIGR01583',
-'carbon_monoxide_dehydrogenase_coxL_TIGR02416',
-'carbon_monoxide_dehydrogenase_coxM',
-'carbon_monoxide_dehydrogenase_coxS',
-'rubisco_form_I',
-'rubisco_form_II',
-'rubisco_form_III',
-'rubisco_form_II_III',
-'rubisco_form_IV',
-'codhC_TIGR00316',
-'codhD_TIGR00381',
-'codh_catalytic_TIGR01702',
-'acetate_citrate_lyase_aclA',
-'acetate_citrate_lyase_aclB',
-'nifD_TIGR01282',
-'nifH_TIGR01287',
-'nifK_TIGR01286',
-'nitrite_oxidoreductase_nxrA',
-'nitrite_oxidoreductase_nxrB',
-'napA_TIGR01706',
-'napB_PF03892',
-'narG_TIGR01580',
-'narH_TIGR01660',
-'nrfA_TIGR03152',
-'nrfH_TIGR03153',
-'nirB_TIGR02374',
-'nirD_TIGR02378',
-'nirK_TIGR02376',
-'nitrite_reductase_nirS',
-'nitric_oxide_reductase_norB',
-'nitric_oxide_reductase_norC',
-'nosD_TIGR04247',
-'nosZ_TIGR04246',
-'hydrazine_oxidase_hzoA',
-'hydrazine_synthase_hzsA',
-'fccB_PF09242',
-'sulfide_quinone_oxidoreductase_sqr',
-'sulfur_dioxygenase_sdo',
-'aprA_TIGR02061',
-'sat_TIGR00339',
-'dsrA_TIGR02064',
-'dsrB_TIGR02066',
-'dsrD_PF08679',
-'thiosulfate_reductase_phsA',
-'soxB_TIGR04486',
-'soxC_TIGR04555',
-'soxY_TIGR04488',
-'coxA_TIGR02891',
-'coxB_TIGR02866',
-'ccoN_TIGR00780',
-'ccoO_TIGR00781',
-'ccoP_TIGR00782',
-'cyoA_TIGR01433',
-'cyoD_TIGR02847',
-'cyoE_TIGR01473',
-'cydA_PF01654',
-'cydB_TIGR00203',
-'qoxA_TIGR01432',
-'FeFeHydrogenase_TIGR02512',
-'FeFeHydrogenase_TIGR04105',
-'Hydrogenase_Group_1',
-'Hydrogenase_Group_2a',
-'Hydrogenase_Group_2b',
-'Hydrogenase_Group_3a',
-'Hydrogenase_Group_3b',
-'Hydrogenase_Group_3c',
-'Hydrogenase_Group_3d',
-'Hydrogenase_Group_4']
+reordered_cols = ['ndma_methanol_dehydrogenase_TIGR04266','madA_TIGR02659','madB_TIGR02658','fdh_thiol_id_TIGR02819','sfh_TIGR02821','sgdh_TIGR02818','smdh_TIGR03451','fae_TIGR03126','fmtf_TIGR03119','mtmc_TIGR03120','fdhA_TIGR01591','fdhB_TIGR01582','fdhC_TIGR01583','carbon_monoxide_dehydrogenase_coxL_TIGR02416','carbon_monoxide_dehydrogenase_coxM','carbon_monoxide_dehydrogenase_coxS','rubisco_form_I','rubisco_form_II','rubisco_form_III','rubisco_form_II_III','rubisco_form_IV','codhC_TIGR00316','codhD_TIGR00381','codh_catalytic_TIGR01702','acetate_citrate_lyase_aclA','acetate_citrate_lyase_aclB','nifD_TIGR01282','nifH_TIGR01287','nifK_TIGR01286','nitrite_oxidoreductase_nxrA','nitrite_oxidoreductase_nxrB','napA_TIGR01706','napB_PF03892','narG_TIGR01580','narH_TIGR01660','nrfA_TIGR03152','nrfH_TIGR03153','nirB_TIGR02374','nirD_TIGR02378','nirK_TIGR02376','nitrite_reductase_nirS','nitric_oxide_reductase_norB','nitric_oxide_reductase_norC','nosD_TIGR04247','nosZ_TIGR04246','hydrazine_oxidase_hzoA','hydrazine_synthase_hzsA','fccB_PF09242','sulfide_quinone_oxidoreductase_sqr','sulfur_dioxygenase_sdo','aprA_TIGR02061','sat_TIGR00339','dsrA_TIGR02064','dsrB_TIGR02066','dsrD_PF08679','thiosulfate_reductase_phsA','soxB_TIGR04486','soxC_TIGR04555','soxY_TIGR04488','coxA_TIGR02891','coxB_TIGR02866','ccoN_TIGR00780','ccoO_TIGR00781','ccoP_TIGR00782','cyoA_TIGR01433','cyoD_TIGR02847','cyoE_TIGR01473','cydA_PF01654','cydB_TIGR00203','qoxA_TIGR01432','FeFeHydrogenase_TIGR02512','FeFeHydrogenase_TIGR04105','Hydrogenase_Group_1','Hydrogenase_Group_2a','Hydrogenase_Group_2b','Hydrogenase_Group_3a','Hydrogenase_Group_3b','Hydrogenase_Group_3c','Hydrogenase_Group_3d','Hydrogenase_Group_4']
 
 df_final=df_all[reordered_cols]
 out_stats = OUTPUT + "/results/" + OUTFILE
