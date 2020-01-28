@@ -65,7 +65,7 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 # version to print
-VERSION = '2.1'
+VERSION = '2.21'
 
 # Beginning message
 print('')

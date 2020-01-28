@@ -42,7 +42,7 @@ optional.add_argument('--summary', metavar='OUTFILE', default='custom-markers-re
 optional.add_argument('--heatmap', metavar='HEATOUT', default='custom-markers-results-heatmap.pdf', help="Summary heatmap of metabolic markers in PDF format. If you provide a custom name, it must end in .pdf" )
 
 # kofam options
-kofam.add_argument('--kofam', metavar='KOFAM', help='Path to KofamKOALA description list with threshold cutoff scores to use with HMM profiles')
+kofam.add_argument('--kofam', metavar='KOFAM', default = 'OFF', help="Use KofamKOALA HMM distributions. By default is OFF, options = ON,OFF")
 kofam.add_argument("--ko_list", metavar='KOLIST', help="Point to location of the KofamKoala ko_list file if using the KofamKOALA KEGG HMMs")
 
 # plotting options
@@ -71,7 +71,7 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 # version to print
-VERSION = '2.1'
+VERSION = '2.21'
 
 # Beginning message
 print('')
