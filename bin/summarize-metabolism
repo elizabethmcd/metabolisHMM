@@ -41,7 +41,7 @@ optional.add_argument('--heatmap', metavar='HEATOUT', default='metabolic-summary
 
 # plotting
 optional.add_argument('--aggregate', metavar='AGG', default='OFF', help="Aggregate metadata names by group = ON, visualize each genome individually = OFF" )
-optional.add_argument("--plotting", metavar='PLOTTING', default='ON', help="Option to turn plotting Rscript on or off depending on if you want just the raw statistics to perform your own plotting, or keep the default plotting settings. You must have the Rscript make-heatmap.R in your path or in the current working directory. Options= ON,OFF.")
+optional.add_argument("--plotting", metavar='PLOTTING', default='ON', help="Option to turn plotting on or off depending on if you want just the raw statistics to perform your own plotting, or keep the default plotting settings. Options= ON,OFF.")
 plotting.add_argument("--ordering", metavar='ORDER', default='OFF', help="Turn ON or OFF to control custom ordering of rows in heatmap. By default is OFF to list in alphabetical ordering.")
 plotting.add_argument("--group_list", metavar='GROUPS', help="Provide .txt file of ordering of groups if turn the aggregating option on to list the rows in custom order instead of the default alphabetical ordering.")
 
