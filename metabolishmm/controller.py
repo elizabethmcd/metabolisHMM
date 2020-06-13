@@ -13,10 +13,10 @@ import logging
 import os
 import sys
 
-import metabolishmm
+import metabolisHMM
 
 def version():
-    versionFile = open(os.path.join(metabolishmm.__path__[0], 'VERSION'))
+    versionFile = open(os.path.join(metabolisHMM.__path__[0], 'VERSION'))
     return versionFile.read().strip()
 
 VERSION = version()
