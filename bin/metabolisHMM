@@ -12,8 +12,8 @@ if sys.version_info[0] < 3:
     print("You are running metabolisHMM with python2 - you need python3.")
     sys.exit(1)
 
-import metabolisHMM.argumentParser
-from metabolisHMM.controller import Controller
+import metabolishmm.argumentParser
+from metabolishmm.controller import Controller
 
 if __name__=='__main__':
-    args = metabolisHMM.argumentParser.parse_args(sys.argv[1:])
+    args = metabolishmm.argumentParser.parse_args(sys.argv[1:])
