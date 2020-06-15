@@ -65,17 +65,6 @@ class Controller():
         logging.debug("Command to run metabolisHMM was: {0}\n".format(' '.join(sys.argv)))
         logging.debug("metabolisHMM version {0} was run \n".format(VERSION))   
     
-    def parseArguments(self, args):
-        # Correct workflow
-
-        if args.operation == "create_phylogeny":
-            self.create_phylogeny_operation(**vars(args))
-        if args.operation == "custom_search":
-            self.custom_search_operation(**vars(args))
-        if args.operation == "single_marker_phylogeny":
-            self.single_marker_phylogeny_operation(**vars(args))
-        if args.operation == "summarize_metabolism":
-            self.summarize_metabolism_operation(**vars(args))
     
     def loadDefaultArgs(self):
         pass

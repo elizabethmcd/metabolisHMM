@@ -8,14 +8,63 @@ import argparse
 import os
 import sys
 
+import metabolisHMM
+
+def version():
+    versionFile = open(os.path.join(metabolisHMM.__path__[0], 'VERSION'))
+    return versionFile.read().strip()
+
+VERSION = version()
+
 if sys.version_info[0] < 3:
     print("You are running metabolisHMM with python2 - you need python3.")
     sys.exit(1)
 
-import metabolisHMM.argumentParser
-from metabolisHMM.controller import Controller
+class SmartFormatter(argparse.ArgumentDefaultsHelpFormatter):
+    def _split_lines(self, text, width):
+        if text.startswith('R|'):
+            return text[2:].splitlines()
+        # this is the RawTextHelpFormatter._split_lines
+        return argparse.HelpFormatter._split_lines(self, text, width)
 
-if __name__=='__main__':
-    args = metabolisHMM.argumentParser.parse_args(sys.argv[2:])
-    controller = Controller()
-    controller.parseArguments(args)
+# Top level help menu
+
+def printHelp():
+    print('')
+    print('         metabolisHMM v' + VERSION + '    ')
+    print('''\
+
+  Elizabeth McDaniel. GPL 3.0 License. McMahon Lab, UW-Madison. 2020
+  
+  Choose one of the workflows below for more detailed help. See https://github.com/elizabethmcd/metabolisHMM/wiki for documentation
+
+  Workflows:
+        create_phylogeny            -> Create genome phylogeny of curated ribosomal protein markers
+        single_marker_phylogeny     -> Create a phylogeny of a single marker
+        summarize_metabolism        -> Summarize metabolic capabilities with curated markers
+        custom_search               -> Search for custom sets of markers among genomes
+
+  Usage: metabolisHMM <command> -h for workflow specific help
+
+  Example: metabolisHMM custom_search -h 
+
+  ** Genome names can only contain underscores "_" and not hypens "-" **
+
+    ''')
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser('metabolisHMM', add_help=False, formatter_class = SmartFormatter)
+    subparsers = parser.add_subparsers(dest='subparser_name')
+
+    create_phylogeny_parser = subparsers.add_parser("create_phylogeny", formatter_class = SmartFormatter, description="Create a genome phylogeny with curated ribosomal protein markers.")
+    create_phylogeny_parser.add_argument("-i","--input", help="Directory where genomes to be screend are held")
+    create_phylogeny_parser.add_argument("-o","--output", help="Directory to store results and intermediate files")
+    create_phylogeny_parser.add_argument("-dom","--domain", help="Options: Archaea or Bacteria (each requires separate curated markers and thus must be constructed separately")
+    create_phylogeny_parser.add_argument("-phy","--phylogeny", help="Options: fastree or raxml")
+
+    args = None
+    if (len(sys.argv) == 1 or sys.argv[1] == '-h' or sys.argv[1] == '--help'):
+        printHelp()
+        sys.exit(1)
+    else:
+        args = parser.parse_args()
