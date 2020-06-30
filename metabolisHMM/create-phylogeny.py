@@ -23,23 +23,6 @@ from collections import defaultdict, Counter
 
 
 def create_phylogeny_wrapper(wd, **kwargs):
-    '''
-
-    Create a genome phylogeny using curated ribosomal protein markers
-
-    --input         Directory where genomes to be screend are held
-    --output        Directory to store results and intermediate files
-    --domain        Options: Archaea or Bacteria (each requires separate curated markers and thus must be constructed separately)
-    --phylogeny     Options: fastree or raxml
-
-    --threads       Number of threads/processors available to use for searches and tree building
-    --loci          Alert the user if a certain genome contains less than X number of ribosomal protein loci. Default=12
-
-    --metadata      Option to output ITOL formatted metadata files
-    --names         CSV formatted file of filenames corresponding to taxonomical or group names for each genome
-    --itol_file     Output ITOL formatted metadata file. Default = itol_metadata.txt
-
-    '''
 
 # check for required installed dependencies
 # prodigal
